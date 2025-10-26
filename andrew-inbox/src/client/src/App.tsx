@@ -7,7 +7,7 @@ type Item = {
 }
 
 function App() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([{ id: 'somethin', name: 'cool' }, { id: 'somethin2', name: 'cool' }]);
   const [newItem, setNewItem] = useState<string>("");
 
   useEffect(() => {
@@ -56,20 +56,16 @@ function App() {
   }, [newItem])
 
   return (
-    <>
-      <div>
-        <input type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-      </div>
-      <div id="items">
-        {items.map((item) =>
-          <button className="item" onClick={() => deleteItem(item)}>
-            <div className="item-card">
-              <div className="item-name">{item.name}</div>
-            </div>
-          </button>
-        )}
-      </div >
-    </>
+    <div id="items">
+      <input type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+      {items.map((item) =>
+        <button className="item" onClick={() => deleteItem(item)}>
+          <div className="item-card">
+            <div className="item-name">{item.name}</div>
+          </div>
+        </button>
+      )}
+    </div>
   )
 }
 
