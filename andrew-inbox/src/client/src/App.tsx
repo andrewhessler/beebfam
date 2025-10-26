@@ -57,7 +57,9 @@ function App() {
 
   return (
     <>
-      <input type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+      <div>
+        <input type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+      </div>
       <div id="items">
         {items.map((item) =>
           <button className="item" onClick={() => deleteItem(item)}>
