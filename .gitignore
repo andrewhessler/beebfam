@@ -26,7 +26,7 @@ dist-ssr
 ##
 
 ## From Chores
-/target
+**/target
 node_modules
 **/dist
 .env
