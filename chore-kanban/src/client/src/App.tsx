@@ -1,0 +1,76 @@
+import { useCallback, useEffect, useState } from 'react'
+import './App.css'
+
+const SECS_IN_DAY = 60 * 60 * 24;
+
+type Chore = {
+  id: number,
+  chore_name: string,
+  freq_secs: number | null,
+  last_completed_at: number | null,
+  overdue: boolean;
+  days_until_overdue: number | null;
+}
+
+function App() {
+  const [chores, setChores] = useState<Chore[]>([]);
+
+  useEffect(() => {
+    async function getChores() {
+      const response = await fetch("/get-chores");
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const { chores } = await response.json();
+      setChores(chores);
+    }
+    getChores();
+  }, [])
+
+  const markChore = useCallback(async (chore: Chore) => {
+    const response = await fetch(`/${chore.id}/toggle-chore`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const { chores } = await response.json();
+    setChores(chores);
+  }, [])
+
+  return (
+    <div id="chores">
+      <h2>Due</h2>
+      {chores.filter((chore) => chore.overdue).map((chore) =>
+        <button className="chore" onClick={() => markChore(chore)}>
+          <div className="chore-card">
+            <div className="chore-name">{chore.chore_name}</div>
+          </div>
+        </button>
+      )}
+      <h2>Ad Hoc</h2>
+      {chores.filter((chore) => !chore.freq_secs && chore.last_completed_at).map((chore) =>
+        <button className="chore" onClick={() => markChore(chore)}>
+          <div className="chore-card">
+            <div className="chore-name">{chore.chore_name}</div>
+            <div className="days-left">{`${((Date.now() / 1000 - chore.last_completed_at!) / SECS_IN_DAY).toFixed(0)} days ago`}</div>
+          </div>
+        </button>
+      )}
+      <h2>Upcoming</h2>
+      {chores.filter((chore) => !chore.overdue && chore.days_until_overdue).sort((a, b) => a.days_until_overdue! - b.days_until_overdue!).map((chore) =>
+        <button className="chore" onClick={() => markChore(chore)}>
+          <div className="chore-card">
+            <div className="chore-name">{chore.chore_name}</div>
+            <div className="days-left">{`in ${chore.days_until_overdue!.toFixed(0)} days`}</div>
+          </div>
+        </button>
+      )}
+    </div >
+  )
+}
+
+export default App

@@ -1,0 +1,25 @@
+#root {
+  display: flex;
+  justify-content: center;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  top: 0px;
+  padding: 1rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+#chores {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.chore-card {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
