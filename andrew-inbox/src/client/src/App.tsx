@@ -52,6 +52,7 @@ function App() {
       }
       const { items } = await response.json();
       setItems(items);
+      setNewItem("");
     }
   }, [newItem])
 
