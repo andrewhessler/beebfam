@@ -9,7 +9,7 @@ cd $parent_path
 
 sudo rm /var/lib/beebfam/*
 
-echo "Moving dist to /var/lib/mario-picker"
+echo "Moving dist to /var/lib/beebfam"
 sudo cp $parent_path/index.css /var/lib/beebfam/index.css
 sudo cp $parent_path/index.html /var/lib/beebfam/index.html
 
