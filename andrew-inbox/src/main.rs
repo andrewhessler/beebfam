@@ -5,29 +5,23 @@ use axum::{
     response::{IntoResponse, Response},
     routing::{get, post},
 };
-use chrono::Utc;
+
 use dotenvy::dotenv;
 use rust_embed::Embed;
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
 use std::{env, net::SocketAddr};
+use uuid::Uuid;
 
-const SECS_IN_DAY: u64 = 60 * 60 * 24;
-
-#[derive(Deserialize, Serialize, Clone, Default, Debug)]
-struct Chore {
-    id: i64,
-    chore_name: String,
-    overdue: bool,
-    on_cadence: bool,
-    days_until_overdue: Option<f64>,
-    freq_secs: Option<i64>,
-    last_completed_at: Option<i64>,
+#[derive(sqlx::FromRow, Debug, Deserialize, Serialize, Clone, Default)]
+struct Item {
+    id: String,
+    name: String,
 }
 
 #[derive(Deserialize, Serialize, Clone, Default, Debug)]
-struct ChoreResponse {
-    chores: Vec<Chore>,
+struct ItemResponse {
+    items: Vec<Item>,
 }
 
 #[derive(Clone, Debug)]
@@ -48,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
 
     sqlx::migrate!("./migrations").run(&pool).await?;
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8081));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8082));
     let listener = tokio::net::TcpListener::bind(addr).await?;
     let addr = listener.local_addr()?;
 
@@ -56,8 +50,9 @@ async fn main() -> anyhow::Result<()> {
         .route("/", get(index_handler))
         .route("/index.html", get(index_handler))
         .route("/assets/{*file}", get(static_handler))
-        .route("/get-chores", get(get_chores_handler))
-        .route("/{id}/toggle-chore", post(toggle_chore_handler))
+        .route("/get-items", get(get_items_handler))
+        .route("/add-item", post(add_item_handler))
+        .route("/{id}/delete-item", post(delete_item_handler))
         .with_state(AppState { pool });
 
     println!("listening on {addr}");
@@ -75,188 +70,63 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
     StaticFile(path)
 }
 
-async fn get_chores_handler(
-    State(state): State<AppState>,
-) -> Result<Json<ChoreResponse>, AppError> {
-    let chores = get_chores(&state.pool).await?;
-    Ok(Json(ChoreResponse { chores }))
+async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemResponse>, AppError> {
+    let items = get_items(&state.pool).await?;
+    Ok(Json(ItemResponse { items }))
 }
 
-async fn toggle_chore_handler(
+#[derive(Deserialize)]
+struct ItemRequest {
+    name: String,
+}
+
+async fn add_item_handler(
+    State(state): State<AppState>,
+    Json(req): Json<ItemRequest>,
+) -> Result<Json<ItemResponse>, AppError> {
+    let id = Uuid::new_v4().to_string();
+    sqlx::query!(
+        r"
+        INSERT INTO items VALUES (?1, ?2) 
+        ",
+        id,
+        req.name
+    )
+    .execute(&state.pool)
+    .await?;
+
+    let items = get_items(&state.pool).await?;
+    Ok(Json(ItemResponse { items }))
+}
+
+async fn delete_item_handler(
     State(state): State<AppState>,
     Path(id): Path<String>,
-) -> Result<Json<ChoreResponse>, AppError> {
-    let chore = get_chore_by_id(&id, &state.pool).await?;
-    let now = Utc::now().timestamp();
-
-    // If frequency doesn't exist, we set it to overdue by giving it a tiny frequency
-    // If frequency is the short circuit frequency (1 hour = 60 * 60 seconds), clear frequency and
-    // set last_completed_at
-    if chore.freq_secs.is_none() {
-        sqlx::query!(
-            r"
-            UPDATE chores SET frequency_hours = ?1 WHERE id = ?2
-            ",
-            1,
-            id
-        )
-        .execute(&state.pool)
-        .await?;
-    } else if chore.freq_secs.unwrap_or(0) == 60 * 60 {
-        // else if is silly but they're connected!
-        sqlx::query!(
-            r"
-            UPDATE chores SET last_completed_at = ?1, frequency_hours = NULL WHERE id = ?2
-            ",
-            now,
-            id
-        )
-        .execute(&state.pool)
-        .await?;
-    }
-
-    if chore.overdue {
-        let last_completed_at = if chore.on_cadence {
-            let freq_secs = chore
-                .freq_secs
-                .expect("A chore on a cadence must have a frequency");
-
-            let mut new_last_completed_at = chore
-                .last_completed_at
-                .expect("A chore on a cadence must have a last_completed_at");
-
-            while new_last_completed_at < now - freq_secs {
-                new_last_completed_at += freq_secs
-            }
-            new_last_completed_at
-        } else {
-            now
-        };
-        // if overdue, update completed_at
-        sqlx::query!(
-            r"
-            UPDATE chores SET last_completed_at = ?1 WHERE id = ?2
-            ",
-            last_completed_at,
-            id
-        )
-        .execute(&state.pool)
-        .await?;
-    } else {
-        let last_completed_at: i64 = if chore.on_cadence {
-            let freq_secs = chore
-                .freq_secs
-                .expect("A chore on a cadence must have a frequency");
-
-            let existing_last_completed_at = chore
-                .last_completed_at
-                .expect("A chore on a cadence must have a last_completed_at");
-
-            let mut new_last_completed_at = existing_last_completed_at;
-
-            while new_last_completed_at > now - freq_secs {
-                new_last_completed_at -= freq_secs
-            }
-            new_last_completed_at
-        } else {
-            now
-        };
-        // if not overdue, null or revert completed_at so it's overdue
-        sqlx::query!(
-            r"
-            UPDATE chores SET last_completed_at = ?1 WHERE id = ?2
-            ",
-            last_completed_at,
-            id
-        )
-        .execute(&state.pool)
-        .await?;
-    }
-
-    let chores = get_chores(&state.pool).await?;
-    Ok(Json(ChoreResponse { chores }))
-}
-
-#[derive(sqlx::FromRow, Debug)]
-struct ChoreRow {
-    id: i64,
-    display_name: String,
-    frequency_hours: Option<i64>,
-    on_cadence: i64,
-    last_completed_at: Option<i64>,
-}
-
-async fn get_chores(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<Chore>> {
-    let records = sqlx::query_as!(
-        ChoreRow,
+) -> Result<Json<ItemResponse>, AppError> {
+    sqlx::query!(
         r"
-        SELECT * FROM chores
+        DELETE FROM items WHERE id = ?1
+        ",
+        id
+    )
+    .execute(&state.pool)
+    .await?;
+
+    let items = get_items(&state.pool).await?;
+    Ok(Json(ItemResponse { items }))
+}
+
+async fn get_items(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<Item>> {
+    let items = sqlx::query_as!(
+        Item,
+        r"
+        SELECT * FROM items
         ",
     )
     .fetch_all(pool)
     .await?;
 
-    Ok(records
-        .iter()
-        .map(|record| map_record_to_chore(record))
-        .collect())
-}
-
-async fn get_chore_by_id(id: &str, pool: &Pool<Sqlite>) -> anyhow::Result<Chore> {
-    let record = sqlx::query_as!(
-        ChoreRow,
-        r"
-        SELECT * FROM chores WHERE id = ?
-        ",
-        id
-    )
-    .fetch_one(pool)
-    .await?;
-
-    return Ok(map_record_to_chore(&record));
-}
-
-fn map_record_to_chore(record: &ChoreRow) -> Chore {
-    let freq_in_days: Option<f64> = if let Some(freq) = record.frequency_hours {
-        Some(freq as f64 / 24.)
-    } else {
-        None
-    };
-
-    let days_since_last_complete: Option<f64> = if let Some(last) = record.last_completed_at {
-        let now_secs = Utc::now().timestamp();
-        Some((now_secs - last) as f64 / SECS_IN_DAY as f64)
-    } else {
-        None
-    };
-
-    let overdue_by_freq = if let (Some(days), Some(freq)) = (days_since_last_complete, freq_in_days)
-    {
-        days > freq
-    } else {
-        false
-    };
-
-    let overdue_by_freq_short_circuit = record.frequency_hours.unwrap_or(0) == 1;
-
-    let overdue = overdue_by_freq || overdue_by_freq_short_circuit;
-
-    let days_until_overdue =
-        if let (Some(days), Some(freq)) = (days_since_last_complete, freq_in_days) {
-            Some(freq - days)
-        } else {
-            None
-        };
-
-    Chore {
-        id: record.id,
-        chore_name: record.display_name.clone(),
-        days_until_overdue,
-        overdue,
-        on_cadence: record.on_cadence == 1,
-        freq_secs: record.frequency_hours.map(|v| v * 60 * 60),
-        last_completed_at: record.last_completed_at,
-    }
+    Ok(items)
 }
 
 pub struct AppError(anyhow::Error);

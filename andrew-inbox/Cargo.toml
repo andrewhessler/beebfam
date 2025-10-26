@@ -15,3 +15,4 @@ serde_json = "1.0.145"
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "sqlite"] }
 tokio = { version = "1.47.1", features = ["full"] }
 tracing = "0.1.41"
+uuid = { version = "1.18.1", features = ["serde", "v4"] }

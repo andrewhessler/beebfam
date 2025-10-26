@@ -1,34 +1,29 @@
 import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 
-const SECS_IN_DAY = 60 * 60 * 24;
-
-type Chore = {
-  id: number,
-  chore_name: string,
-  freq_secs: number | null,
-  last_completed_at: number | null,
-  overdue: boolean;
-  days_until_overdue: number | null;
+type Item = {
+  id: string,
+  name: string,
 }
 
 function App() {
-  const [chores, setChores] = useState<Chore[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
+  const [newItem, setNewItem] = useState<string>("");
 
   useEffect(() => {
-    async function getChores() {
-      const response = await fetch("/get-chores");
+    async function getItems() {
+      const response = await fetch("/get-items");
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      const { chores } = await response.json();
-      setChores(chores);
+      const { items } = await response.json();
+      setItems(items);
     }
-    getChores();
+    getItems();
   }, [])
 
-  const markChore = useCallback(async (chore: Chore) => {
-    const response = await fetch(`/${chore.id}/toggle-chore`, {
+  const deleteItem = useCallback(async (item: Item) => {
+    const response = await fetch(`/${item.id}/delete-item`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -37,39 +32,42 @@ function App() {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    const { chores } = await response.json();
-    setChores(chores);
+    const { items } = await response.json();
+    setItems(items);
   }, [])
 
+  const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      const response = await fetch(`/add-item`, {
+        method: "POST",
+        body: JSON.stringify({
+          name: newItem
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const { items } = await response.json();
+      setItems(items);
+    }
+  }, [newItem])
+
   return (
-    <div id="chores">
-      <h2>Due</h2>
-      {chores.filter((chore) => chore.overdue).map((chore) =>
-        <button className="chore" onClick={() => markChore(chore)}>
-          <div className="chore-card">
-            <div className="chore-name">{chore.chore_name}</div>
-          </div>
-        </button>
-      )}
-      <h2>Ad Hoc</h2>
-      {chores.filter((chore) => !chore.freq_secs && chore.last_completed_at).map((chore) =>
-        <button className="chore" onClick={() => markChore(chore)}>
-          <div className="chore-card">
-            <div className="chore-name">{chore.chore_name}</div>
-            <div className="days-left">{`${((Date.now() / 1000 - chore.last_completed_at!) / SECS_IN_DAY).toFixed(0)} days ago`}</div>
-          </div>
-        </button>
-      )}
-      <h2>Upcoming</h2>
-      {chores.filter((chore) => !chore.overdue && chore.days_until_overdue).sort((a, b) => a.days_until_overdue! - b.days_until_overdue!).map((chore) =>
-        <button className="chore" onClick={() => markChore(chore)}>
-          <div className="chore-card">
-            <div className="chore-name">{chore.chore_name}</div>
-            <div className="days-left">{`in ${chore.days_until_overdue!.toFixed(0)} days`}</div>
-          </div>
-        </button>
-      )}
-    </div >
+    <>
+      <input type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+      <div id="items">
+        {items.map((item) =>
+          <button className="item" onClick={() => deleteItem(item)}>
+            <div className="item-card">
+              <div className="item-name">{item.name}</div>
+            </div>
+          </button>
+        )}
+      </div >
+    </>
   )
 }
 
