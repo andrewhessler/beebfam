@@ -12,7 +12,7 @@ npm install
 
 npm run build
 
-cd $parent_path/../..
+cd $parent_path 
 
 # Build the project in release mode
 echo "Building the project in release mode..."
