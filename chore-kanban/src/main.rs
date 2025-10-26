@@ -196,10 +196,7 @@ async fn get_chores(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<Chore>> {
     .fetch_all(pool)
     .await?;
 
-    Ok(records
-        .iter()
-        .map(|record| map_record_to_chore(record))
-        .collect())
+    Ok(records.iter().map(map_record_to_chore).collect())
 }
 
 async fn get_chore_by_id(id: &str, pool: &Pool<Sqlite>) -> anyhow::Result<Chore> {
@@ -213,15 +210,11 @@ async fn get_chore_by_id(id: &str, pool: &Pool<Sqlite>) -> anyhow::Result<Chore>
     .fetch_one(pool)
     .await?;
 
-    return Ok(map_record_to_chore(&record));
+    Ok(map_record_to_chore(&record))
 }
 
 fn map_record_to_chore(record: &ChoreRow) -> Chore {
-    let freq_in_days: Option<f64> = if let Some(freq) = record.frequency_hours {
-        Some(freq as f64 / 24.)
-    } else {
-        None
-    };
+    let freq_in_days: Option<f64> = record.frequency_hours.map(|freq| freq as f64 / 24.);
 
     let days_since_last_complete: Option<f64> = if let Some(last) = record.last_completed_at {
         let now_secs = Utc::now().timestamp();
