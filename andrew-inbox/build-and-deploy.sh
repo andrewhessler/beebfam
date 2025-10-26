@@ -33,7 +33,7 @@ sudo mv $parent_path/target/release/$service /usr/local/bin/$service
 
 # Restart the systemd service
 sudo systemctl daemon-reload
-echo "Restarting the systemd service 'chore-kanban.service'..."
+echo "Restarting the systemd service '$service.service'..."
 sudo systemctl restart $service.service
 
 echo "Build, install, and service restart complete."
