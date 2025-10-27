@@ -88,7 +88,7 @@ function App() {
         </button>
       )}
       <h2>Inactive Items</h2>
-      {items.filter((item) => !item.active).map((item) =>
+      {items.filter((item) => !item.active).sort((a, b) => a.name.localeCompare(b.name)).map((item) =>
         <button className="item" onClick={() => toggleItem(item)}>
           <div className="item-card">
             <div className="item-name">{item.name}</div>
