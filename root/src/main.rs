@@ -15,9 +15,7 @@ const COOKIE_NAME: &str = "beebfam-key";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    println!("{:?}", std::env::vars());
-    dotenv()?;
-    println!("hello");
+    _ = dotenv();
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
     let listener = tokio::net::TcpListener::bind(addr).await?;
