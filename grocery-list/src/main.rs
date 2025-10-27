@@ -49,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
     let key_path = std::env::var("KEY_PATH")?;
     let key = fs::read_to_string(key_path)?.trim().to_string();
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8082));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8083));
     let listener = tokio::net::TcpListener::bind(addr).await?;
     let addr = listener.local_addr()?;
 
