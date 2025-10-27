@@ -71,7 +71,10 @@ async fn login_handler(
             Cookie::build((COOKIE_NAME, key.trim().to_string()))
                 .path("/")
                 .expires(
-                    OffsetDateTime::from_unix_timestamp(Utc::now().timestamp() + ONE_YEAR).unwrap(),
+                    OffsetDateTime::from_unix_timestamp(
+                        Utc::now().timestamp() + TEN_YEARS_IN_SECONDS,
+                    )
+                    .unwrap(),
                 )
                 .domain(".beebfam.org"),
         )
