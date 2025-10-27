@@ -14,7 +14,7 @@ use std::{fs, net::SocketAddr};
 use time::OffsetDateTime;
 
 const COOKIE_NAME: &str = "beebfam-key";
-const TEN_YEARS_IN_SECONDS: i64 = 315_569_520;
+const ONE_YEAR_IN_SECONDS: i64 = 31_556_952;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -72,7 +72,7 @@ async fn login_handler(
                 .path("/")
                 .expires(
                     OffsetDateTime::from_unix_timestamp(
-                        Utc::now().timestamp() + TEN_YEARS_IN_SECONDS,
+                        Utc::now().timestamp() + ONE_YEAR_IN_SECONDS,
                     )
                     .unwrap(),
                 )
