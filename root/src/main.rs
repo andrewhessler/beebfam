@@ -64,7 +64,11 @@ async fn login_handler(
     }
 
     let updated_cookies = if req.password.trim() == pw.trim() {
-        cookies.add(Cookie::build((COOKIE_NAME, key.trim().to_string())).path("/"))
+        cookies.add(
+            Cookie::build((COOKIE_NAME, key.trim().to_string()))
+                .path("/")
+                .domain(".beebfam.org"),
+        )
     } else {
         return Err(AppError(anyhow::anyhow!("Nope, sorry")));
     };
