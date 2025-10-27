@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use axum::{
     Json, Router,
     extract::{Path, State},
@@ -5,14 +6,16 @@ use axum::{
     response::{IntoResponse, Response},
     routing::{get, post},
 };
+use axum_extra::extract::CookieJar;
 use chrono::Utc;
 use dotenvy::dotenv;
 use rust_embed::Embed;
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
-use std::{env, net::SocketAddr};
+use std::{env, fs, net::SocketAddr};
 
 const SECS_IN_DAY: u64 = 60 * 60 * 24;
+const COOKIE_NAME: &str = "beebfam-key";
 
 #[derive(Deserialize, Serialize, Clone, Default, Debug)]
 struct Chore {
@@ -33,6 +36,7 @@ struct ChoreResponse {
 #[derive(Clone, Debug)]
 struct AppState {
     pub pool: Pool<Sqlite>,
+    pub key: String,
 }
 
 #[tokio::main]
@@ -48,6 +52,9 @@ async fn main() -> anyhow::Result<()> {
 
     sqlx::migrate!("./migrations").run(&pool).await?;
 
+    let key_path = std::env::var("KEY_PATH")?;
+    let key = fs::read_to_string(key_path)?.trim().to_string();
+
     let addr = SocketAddr::from(([127, 0, 0, 1], 8081));
     let listener = tokio::net::TcpListener::bind(addr).await?;
     let addr = listener.local_addr()?;
@@ -58,7 +65,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/assets/{*file}", get(static_handler))
         .route("/get-chores", get(get_chores_handler))
         .route("/{id}/toggle-chore", post(toggle_chore_handler))
-        .with_state(AppState { pool });
+        .with_state(AppState { pool, key });
 
     println!("listening on {addr}");
     _ = axum::serve(listener, app).await;
@@ -85,7 +92,15 @@ async fn get_chores_handler(
 async fn toggle_chore_handler(
     State(state): State<AppState>,
     Path(id): Path<String>,
+    cookies: CookieJar,
 ) -> Result<Json<ChoreResponse>, AppError> {
+    if cookies
+        .get(COOKIE_NAME)
+        .is_none_or(|val| val.value() != state.key)
+    {
+        return Err(AppError(anyhow!("Nope, sorry")));
+    }
+
     let chore = get_chore_by_id(&id, &state.pool).await?;
     let now = Utc::now().timestamp();
 

@@ -1,6 +1,8 @@
 #root {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
@@ -16,6 +18,19 @@
   row-gap: 20px;
   width: 100%;
   max-width: 600px;
+}
+
+#login-block {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  padding-top: 100px;
+  max-width: 600px;
+  width: 100%;
+}
+
+#password {
+  width: 100%;
 }
 
 .location {

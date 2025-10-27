@@ -7,7 +7,7 @@ type Item = {
 }
 
 function App() {
-  const [items, setItems] = useState<Item[]>([{ id: 'somethin', name: 'cool' }, { id: 'somethin2', name: 'cool' }]);
+  const [items, setItems] = useState<Item[]>([]);
   const [newItem, setNewItem] = useState<string>("");
 
   useEffect(() => {

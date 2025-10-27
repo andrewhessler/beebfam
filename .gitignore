@@ -32,3 +32,6 @@ node_modules
 .env
 *.db*
 ##
+
+key
+pw

@@ -1,16 +1,31 @@
 #!/bin/bash
 set -e
 
-git pull
-
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+service="root"
+
 cd $parent_path
 
+git pull
 
-sudo rm /var/lib/beebfam/*
+# Build the project in release mode
+echo "Building the project in release mode..."
+cargo build --release
 
-echo "Moving dist to /var/lib/beebfam"
-sudo cp $parent_path/index.css /var/lib/beebfam/index.css
-sudo cp $parent_path/index.html /var/lib/beebfam/index.html
+# Verify the executable exists
+if [ ! -f "$parent_path/target/release/$service" ]; then
+  echo "Error: Executable not found at $parent_path/target/release/$service"
+  echo "Ensure your Cargo.toml specifies the package name correctly"
+  exit 1
+fi
+
+# Move the executable to /usr/local/bin (sudo may be required)
+echo "Moving executable to /usr/local/bin/$service"
+sudo mv $parent_path/target/release/$service /usr/local/bin/$service
+
+# Restart the systemd service
+sudo systemctl daemon-reload
+echo "Restarting the systemd service '$service.service'..."
+sudo systemctl restart $service.service
 
 echo "Build, install, and service restart complete."

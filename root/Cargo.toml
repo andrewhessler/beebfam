@@ -1,5 +1,5 @@
 [package]
-name = "andrew-inbox"
+name = "root"
 version = "0.1.0"
 edition = "2024"
 
@@ -13,7 +13,6 @@ mime_guess = "2.0.5"
 rust-embed = "8.7.2"
 serde = { version = "1.0.225", features = ["derive"] }
 serde_json = "1.0.145"
-sqlx = { version = "0.8.6", features = ["runtime-tokio", "sqlite"] }
 tokio = { version = "1.47.1", features = ["full"] }
 tracing = "0.1.41"
 uuid = { version = "1.18.1", features = ["serde", "v4"] }
