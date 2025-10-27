@@ -6,12 +6,15 @@ use axum::{
 };
 
 use axum_extra::extract::{CookieJar, cookie::Cookie};
+use chrono::Utc;
 use dotenvy::dotenv;
 use rust_embed::Embed;
 use serde::Deserialize;
 use std::{fs, net::SocketAddr};
+use time::OffsetDateTime;
 
 const COOKIE_NAME: &str = "beebfam-key";
+const TEN_YEARS: i64 = 31_556_952;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -67,6 +70,10 @@ async fn login_handler(
         cookies.add(
             Cookie::build((COOKIE_NAME, key.trim().to_string()))
                 .path("/")
+                .expires(
+                    OffsetDateTime::from_unix_timestamp(Utc::now().timestamp() + TEN_YEARS)
+                        .unwrap(),
+                )
                 .domain(".beebfam.org"),
         )
     } else {
