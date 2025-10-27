@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import './App.css'
+import { useCallback, useEffect, useState } from 'react';
+import './App.css';
 
 type Item = {
   name: string,
@@ -22,7 +22,8 @@ function App() {
     getItems();
   }, [])
 
-  const deleteItem = useCallback(async (item: Item) => {
+  const deleteItem = useCallback(async (item: Item, event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     const response = await fetch(`/delete-item`, {
       method: "POST",
       body: JSON.stringify({
@@ -83,7 +84,7 @@ function App() {
         <button className="item" onClick={() => toggleItem(item)}>
           <div className="item-card">
             <div className="item-name">{item.name}</div>
-            <button className="delete-item" onClick={() => deleteItem(item)}>🗑️</button>
+            <button className="delete-item" onClick={(event) => deleteItem(item, event)}>🗑️</button>
           </div>
         </button>
       )}
@@ -92,7 +93,7 @@ function App() {
         <button className="item" onClick={() => toggleItem(item)}>
           <div className="item-card">
             <div className="item-name">{item.name}</div>
-            <button className="delete-item" onClick={() => deleteItem(item)}>🗑️</button>
+            <button className="delete-item" onClick={(event) => deleteItem(item, event)}>🗑️</button>
           </div>
         </button>
       )}
