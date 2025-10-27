@@ -36,7 +36,7 @@ struct AppState {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    dotenv()?;
+    _ = dotenv();
     let raw_database_url = env::var("DATABASE_URL").expect("DATABASE_URL to be defined");
     let database_url = raw_database_url.split(":").last().unwrap();
 
