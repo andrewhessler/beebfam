@@ -59,7 +59,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/assets/{*file}", get(static_handler))
         .route("/get-items", get(get_items_handler))
         .route("/toggle-item", post(toggle_item_handler))
-        .route("/{id}/delete-item", post(delete_item_handler))
+        .route("/delete-item", post(delete_item_handler))
         .with_state(AppState { pool, key });
 
     println!("listening on {addr}");
