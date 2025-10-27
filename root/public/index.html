@@ -22,7 +22,7 @@
     </div>
 
     <div id="login-block">
-      <input type="text" id="password" onfocus="this.value=''" /> <button onclick="login()">Login</button>
+      <input type="text" id="password" onfocus="this.value = this.value === 'Login needed' ? '' : this.value" /> <button onclick="login()">Login</button>
     </div>
   </div>
 
