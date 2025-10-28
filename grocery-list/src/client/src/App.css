@@ -34,8 +34,15 @@
   z-index: 10;
 }
 
-input {
-  font-size: 16px;
+
+#input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category {
+  width: 100%;
 }
 
 .item {
@@ -48,6 +55,7 @@ input {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  width: 100%;
 }
 
 .item:hover {
@@ -57,6 +65,14 @@ input {
 .item:focus,
 .item:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+input {
+  font-size: 16px;
+}
+
+select {
+  font-size: 16px;
 }
 
 @media (prefers-color-scheme: light) {

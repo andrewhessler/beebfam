@@ -4,11 +4,34 @@ import './App.css';
 type Item = {
   name: string,
   active: boolean,
+  category: string,
+  qty: string,
 }
 
+const CATEGORIES = [
+  "",
+  "produce",
+  "deli",
+  "bakery",
+  "meat counter",
+  "dry goods",
+  "dairy",
+  "frozen",
+  "household",
+  "health & beauty",
+  "pet",
+  "amazon",
+  "sewing",
+];
+
 function App() {
-  const [items, setItems] = useState<Item[]>([{ name: 'something', active: true }, { name: 'something else', active: false }]);
+  const [items, setItems] = useState<Item[]>([{ name: 'something', category: "", active: true, qty: "70 lbs" }
+    , { name: 'something else', category: "produce", qty: "2", active: false }]);
   const [newItem, setNewItem] = useState<string>("");
+  const [qty, setQty] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [filter, setFilter] = useState<string>("all");
+
 
   useEffect(() => {
     async function getItems() {
@@ -45,7 +68,9 @@ function App() {
       const response = await fetch(`/toggle-item`, {
         method: "POST",
         body: JSON.stringify({
-          name: newItem
+          name: newItem,
+          qty,
+          category,
         }),
         headers: {
           "Content-Type": "application/json"
@@ -58,7 +83,7 @@ function App() {
       setItems(items);
       setNewItem("");
     }
-  }, [newItem])
+  }, [newItem, qty, category])
 
   const toggleItem = useCallback(async (item: Item) => {
     const response = await fetch(`/toggle-item`, {
@@ -79,23 +104,52 @@ function App() {
 
   return (
     <div id="items">
-      <input type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-      {items.filter((item) => item.active).map((item) =>
-        <button className="item" onClick={() => toggleItem(item)}>
-          <div className="item-card">
-            <div className="item-name">{item.name}</div>
-            <button className="delete-item" onClick={(event) => deleteItem(item, event)}>🗑️</button>
-          </div>
-        </button>
+      <div id="input">
+        <input type="text" placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+        <input type="text" placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
+        <select onChange={(event) => setCategory(event.target.value)}>
+          {CATEGORIES.map((cat) =>
+            <option value={cat}>{cat}</option>
+          )}
+        </select>
+      </div>
+      <div id="filter">
+        <label>filter: </label>
+        <select onChange={(event) => setFilter(event.target.value)}>
+          <option value="all">all</option>
+          {CATEGORIES.map((cat) =>
+            <option value={cat}>{cat}</option>
+          )}
+        </select>
+      </div>
+      {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
+        <div className="category">
+          <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
+          {items.filter((item) => item.active && item.category === cat).map((item) => (
+            <button className="item" onClick={() => toggleItem(item)}>
+              <div className="item-card">
+                <div className="item-name">{item.name}</div>
+                <div className='item-qty'>{item.qty}</div>
+                <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
+              </div>
+            </button>
+          ))}
+        </div>)
       )}
       <h2>Inactive Items</h2>
-      {items.filter((item) => !item.active).sort((a, b) => a.name.localeCompare(b.name)).map((item) =>
-        <button className="item" onClick={() => toggleItem(item)}>
-          <div className="item-card">
-            <div className="item-name">{item.name}</div>
-            <button className="delete-item" onClick={(event) => deleteItem(item, event)}>🗑️</button>
-          </div>
-        </button>
+      {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
+        <div>
+          <h3>{cat?.length ? cat : "misc"}</h3>
+          {items.filter((item) => !item.active && item.category === cat).map((item) => (
+            <button className="item" onClick={() => toggleItem(item)}>
+              <div className="item-card">
+                <div className="item-name">{item.name}</div>
+                <div className='item-qty'>{item.qty}</div>
+                <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
+              </div>
+            </button>
+          ))}
+        </div>)
       )}
     </div>
   )
