@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
 
 type Item = {
@@ -9,6 +9,7 @@ type Item = {
 function App() {
   const [items, setItems] = useState<Item[]>([]);
   const [newItem, setNewItem] = useState<string>("");
+  const inputRef = useRef(null);
 
   useEffect(() => {
     async function getItems() {
@@ -56,9 +57,14 @@ function App() {
     }
   }, [newItem])
 
+  useEffect(() => {
+    if (inputRef.current) {
+      (inputRef.current as HTMLInputElement).focus()
+    }
+  })
   return (
     <div id="items">
-      <input autoFocus type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+      <input ref={inputRef} type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
       {items.map((item) =>
         <button className="item" onClick={() => deleteItem(item)}>
           <div className="item-card">
