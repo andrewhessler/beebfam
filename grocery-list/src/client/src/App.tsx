@@ -113,7 +113,7 @@ function App() {
   return (
     <div id="content">
       <div id="input">
-        <select onChange={(event) => setCategory(event.target.value)}>
+        <select id="input-select" onChange={(event) => setCategory(event.target.value)}>
           {CATEGORIES.map((cat) =>
             <option value={cat}>{cat}</option>
           )}
