@@ -69,7 +69,7 @@ function App() {
 
   const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      const response = await fetch(`/toggle-item`, {
+      const response = await fetch(`/add-item`, {
         method: "POST",
         body: JSON.stringify({
           name: newItem,
