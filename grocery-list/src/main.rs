@@ -20,6 +20,8 @@ const COOKIE_NAME: &str = "beebfam-key";
 struct Item {
     name: String,
     active: bool,
+    qty: Option<String>,
+    category: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Default, Debug)]
@@ -85,6 +87,8 @@ async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemRes
 #[derive(Deserialize)]
 struct ItemRequest {
     name: String,
+    qty: Option<String>,
+    category: String,
 }
 
 /// Overloaded path that inserts as active if name doesn't exist, or toggles if name does exist
@@ -113,19 +117,23 @@ async fn toggle_item_handler(
         let inverse_active = !item.active;
         sqlx::query!(
             r"
-            UPDATE items SET active = ?1 WHERE name = ?2
+            UPDATE items SET active = ?1, qty = ?2, category = ?3 WHERE name = ?4
             ",
             inverse_active,
-            item.name
+            req.qty,
+            req.category,
+            item.name,
         )
         .execute(&state.pool)
         .await?;
     } else {
         sqlx::query!(
             r"
-            INSERT INTO items VALUES (?1, 1) 
+            INSERT INTO items VALUES (?1, 1, ?2, ?3) 
             ",
-            req.name
+            req.name,
+            req.qty,
+            req.category
         )
         .execute(&state.pool)
         .await?;

@@ -9,7 +9,6 @@ type Item = {
 }
 
 const CATEGORIES = [
-  "",
   "produce",
   "deli",
   "bakery",
@@ -22,14 +21,15 @@ const CATEGORIES = [
   "pet",
   "amazon",
   "sewing",
+  "misc"
 ];
 
 function App() {
   const [items, setItems] = useState<Item[]>([{ name: 'something', category: "", active: true, qty: "70 lbs" }
     , { name: 'something else', category: "produce", qty: "2", active: false }]);
   const [newItem, setNewItem] = useState<string>("");
-  const [qty, setQty] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
+  const [qty, setQty] = useState<string | null>(null);
+  const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [filter, setFilter] = useState<string>("all");
 
 
