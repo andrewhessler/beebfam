@@ -6,6 +6,8 @@ type Item = {
   name: string,
 }
 
+// ios workaround
+// https://github.com/WebKit/WebKit/pull/2907#issuecomment-2204513113
 function focusAndOpenKeyboard(el: HTMLInputElement, timeout: number) {
   if (!timeout) {
     timeout = 100;
