@@ -58,7 +58,7 @@ function App() {
 
   return (
     <div id="items">
-      <input type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+      <input autoFocus type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
       {items.map((item) =>
         <button className="item" onClick={() => deleteItem(item)}>
           <div className="item-card">
