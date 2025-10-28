@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './App.css';
 
 type Item = {
@@ -30,7 +30,8 @@ function App() {
     { name: 'something else', category: "produce", qty: "2", active: false },
     { name: 'aomething else', category: "produce", qty: "2", active: false },
   ]);
-  const [newItem, setNewItem] = useState<string>("");
+  const newItemRef = useRef(null);
+  const [newItem, setNewItem] = useState<string | null>();
   const [qty, setQty] = useState<string | null>(null);
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [filter, setFilter] = useState<string>("all");
@@ -84,7 +85,11 @@ function App() {
       }
       const { items } = await response.json();
       setItems(items);
-      setNewItem("");
+      setNewItem(null);
+      setQty(null);
+      if (newItemRef.current) {
+        (newItemRef.current as HTMLInputElement).focus();
+      }
     }
   }, [newItem, qty, category])
 
@@ -108,8 +113,8 @@ function App() {
   return (
     <div id="content">
       <div id="input">
-        <input type="text" placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-        <input type="text" placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
+        <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+        <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
         <select onChange={(event) => setCategory(event.target.value)}>
           {CATEGORIES.map((cat) =>
             <option value={cat}>{cat}</option>
