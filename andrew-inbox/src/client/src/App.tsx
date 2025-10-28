@@ -88,7 +88,7 @@ function App() {
 
   useEffect(() => {
     if (inputRef.current) {
-      focusAndOpenKeyboard(inputRef.current, 10);
+      focusAndOpenKeyboard(inputRef.current, 100);
     }
   }, [])
   return (
