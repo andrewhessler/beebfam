@@ -25,8 +25,11 @@ const CATEGORIES = [
 ];
 
 function App() {
-  const [items, setItems] = useState<Item[]>([{ name: 'something', category: "", active: true, qty: "70 lbs" }
-    , { name: 'something else', category: "produce", qty: "2", active: false }]);
+  const [items, setItems] = useState<Item[]>([
+    { name: 'something', category: "", active: true, qty: "70 lbs" },
+    { name: 'something else', category: "produce", qty: "2", active: false },
+    { name: 'aomething else', category: "produce", qty: "2", active: false },
+  ]);
   const [newItem, setNewItem] = useState<string>("");
   const [qty, setQty] = useState<string | null>(null);
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
@@ -103,7 +106,7 @@ function App() {
   }, [])
 
   return (
-    <div id="items">
+    <div id="content">
       <div id="input">
         <input type="text" placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
         <input type="text" placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
@@ -125,30 +128,34 @@ function App() {
       {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
         <div className="category">
           <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-          {items.filter((item) => item.active && item.category === cat).map((item) => (
-            <button className="item" onClick={() => toggleItem(item)}>
-              <div className="item-card">
-                <div className="item-name">{item.name}</div>
-                <div className='item-qty'>{item.qty}</div>
-                <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
-              </div>
-            </button>
-          ))}
+          {items.filter((item) => item.active && item.category === cat)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((item) => (
+              <button className="item" onClick={() => toggleItem(item)}>
+                <div className="item-card">
+                  <div className="item-name">{item.name}</div>
+                  <div className='item-qty'>{item.qty}</div>
+                  <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
+                </div>
+              </button>
+            ))}
         </div>)
       )}
       <h2>Inactive Items</h2>
       {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
-        <div>
+        <div className="category">
           <h3>{cat?.length ? cat : "misc"}</h3>
-          {items.filter((item) => !item.active && item.category === cat).map((item) => (
-            <button className="item" onClick={() => toggleItem(item)}>
-              <div className="item-card">
-                <div className="item-name">{item.name}</div>
-                <div className='item-qty'>{item.qty}</div>
-                <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
-              </div>
-            </button>
-          ))}
+          {items.filter((item) => !item.active && item.category === cat)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((item) => (
+              <button className="item" onClick={() => toggleItem(item)}>
+                <div className="item-card">
+                  <div className="item-name">{item.name}</div>
+                  <div className='item-qty'>{item.qty}</div>
+                  <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
+                </div>
+              </button>
+            ))}
         </div>)
       )}
     </div>
