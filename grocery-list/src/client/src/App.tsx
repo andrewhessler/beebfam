@@ -113,13 +113,13 @@ function App() {
   return (
     <div id="content">
       <div id="input">
-        <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-        <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
         <select onChange={(event) => setCategory(event.target.value)}>
           {CATEGORIES.map((cat) =>
             <option value={cat}>{cat}</option>
           )}
         </select>
+        <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+        <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
       </div>
       <div id="filter">
         <label>filter: </label>
