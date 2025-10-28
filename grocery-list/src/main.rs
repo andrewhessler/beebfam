@@ -60,6 +60,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/index.html", get(index_handler))
         .route("/assets/{*file}", get(static_handler))
         .route("/get-items", get(get_items_handler))
+        .route("/add-item", post(add_item_handler))
         .route("/toggle-item", post(toggle_item_handler))
         .route("/delete-item", post(delete_item_handler))
         .with_state(AppState { pool, key });
@@ -85,10 +86,15 @@ async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemRes
 }
 
 #[derive(Deserialize)]
-struct ItemRequest {
+struct AddItemRequest {
     name: String,
     qty: Option<String>,
     category: String,
+}
+
+#[derive(Deserialize)]
+struct ToggleItemRequest {
+    name: String,
 }
 
 #[derive(Deserialize)]
@@ -96,11 +102,10 @@ struct DeleteItemRequest {
     name: String,
 }
 
-/// Overloaded path that inserts as active if name doesn't exist, or toggles if name does exist
-async fn toggle_item_handler(
+async fn add_item_handler(
     State(state): State<AppState>,
     cookies: CookieJar,
-    Json(req): Json<ItemRequest>,
+    Json(req): Json<AddItemRequest>,
 ) -> Result<Json<ItemResponse>, AppError> {
     if cookies
         .get(COOKIE_NAME)
@@ -148,6 +153,43 @@ async fn toggle_item_handler(
     Ok(Json(ItemResponse { items }))
 }
 
+async fn toggle_item_handler(
+    State(state): State<AppState>,
+    cookies: CookieJar,
+    Json(req): Json<ToggleItemRequest>,
+) -> Result<Json<ItemResponse>, AppError> {
+    if cookies
+        .get(COOKIE_NAME)
+        .is_none_or(|val| val.value().trim() != state.key)
+    {
+        return Err(AppError(anyhow!("Nope, sorry")));
+    }
+
+    let item = sqlx::query_as!(
+        Item,
+        r"
+        SELECT * FROM items WHERE name = ?1
+        ",
+        req.name
+    )
+    .fetch_one(&state.pool)
+    .await?;
+
+    let inverse_active = !item.active;
+
+    sqlx::query!(
+        r"
+            UPDATE items SET active = ?1 WHERE name = ?2
+            ",
+        inverse_active,
+        item.name,
+    )
+    .execute(&state.pool)
+    .await?;
+
+    let items = get_items(&state.pool).await?;
+    Ok(Json(ItemResponse { items }))
+}
 async fn delete_item_handler(
     State(state): State<AppState>,
     cookies: CookieJar,
