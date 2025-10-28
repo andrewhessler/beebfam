@@ -91,6 +91,11 @@ struct ItemRequest {
     category: String,
 }
 
+#[derive(Deserialize)]
+struct DeleteItemRequest {
+    name: String,
+}
+
 /// Overloaded path that inserts as active if name doesn't exist, or toggles if name does exist
 async fn toggle_item_handler(
     State(state): State<AppState>,
@@ -146,7 +151,7 @@ async fn toggle_item_handler(
 async fn delete_item_handler(
     State(state): State<AppState>,
     cookies: CookieJar,
-    Json(req): Json<ItemRequest>,
+    Json(req): Json<DeleteItemRequest>,
 ) -> Result<Json<ItemResponse>, AppError> {
     if cookies
         .get(COOKIE_NAME)
