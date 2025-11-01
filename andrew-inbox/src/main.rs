@@ -21,6 +21,7 @@ const COOKIE_NAME: &str = "beebfam-key";
 struct Item {
     id: String,
     name: String,
+    created_at: i64,
 }
 
 #[derive(Deserialize, Serialize, Clone, Default, Debug)]
@@ -103,7 +104,7 @@ async fn add_item_handler(
     let id = Uuid::new_v4().to_string();
     sqlx::query!(
         r"
-        INSERT INTO items VALUES (?1, ?2) 
+        INSERT INTO items (id, name) VALUES (?1, ?2) 
         ",
         id,
         req.name
