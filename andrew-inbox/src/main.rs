@@ -102,12 +102,14 @@ async fn add_item_handler(
     }
 
     let id = Uuid::new_v4().to_string();
+    let now = chrono::Utc::now().timestamp();
     sqlx::query!(
         r"
-        INSERT INTO items (id, name) VALUES (?1, ?2) 
+        INSERT INTO items (id, name, created_at) VALUES (?1, ?2, ?3) 
         ",
         id,
-        req.name
+        req.name,
+        now
     )
     .execute(&state.pool)
     .await?;
