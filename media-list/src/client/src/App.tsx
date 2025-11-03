@@ -14,7 +14,7 @@ const CATEGORIES = [
 ];
 
 function App() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([{ name: 'something', category: 'books' }]);
   const newItemRef = useRef(null);
   const [newItem, setNewItem] = useState<string | null>();
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
