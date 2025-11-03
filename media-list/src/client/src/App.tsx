@@ -4,6 +4,7 @@ import './App.css';
 type Item = {
   name: string,
   category: string,
+  created_at: number,
 }
 
 const CATEGORIES = [
@@ -93,20 +94,21 @@ function App() {
           )}
         </select>
       </div>
-      {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
-        <div className="category">
-          <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-          {items.filter((item) => item.category === cat)
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((item) => (
-              <button className="item" onClick={() => deleteItem(item)}>
-                <div className="item-card">
-                  <div className="item-name">{item.name}</div>
-                </div>
-              </button>
-            ))}
-        </div>)
-      )}
+      {CATEGORIES.filter((cat) => cat === filter || filter === "all")
+        .map((cat) => (
+          <div className="category">
+            <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
+            {items.filter((item) => item.category === cat)
+              .sort((a, b) => a.created_at - b.created_at)
+              .map((item) => (
+                <button className="item" onClick={() => deleteItem(item)}>
+                  <div className="item-card">
+                    <div className="item-name">{item.name}</div>
+                  </div>
+                </button>
+              ))}
+          </div>)
+        )}
     </div>
   )
 }

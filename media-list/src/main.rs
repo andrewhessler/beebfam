@@ -20,6 +20,7 @@ const COOKIE_NAME: &str = "beebfam-key";
 struct Item {
     name: String,
     category: Option<String>,
+    created_at: i64,
 }
 
 #[derive(Deserialize, Serialize, Clone, Default, Debug)]
@@ -105,12 +106,15 @@ async fn add_item_handler(
         return Err(AppError(anyhow!("Nope, sorry")));
     }
 
+    let now = chrono::Utc::now().timestamp();
+
     sqlx::query!(
         r"
-            INSERT INTO items VALUES (?1, ?2) 
+            INSERT INTO items VALUES (?1, ?2, ?3) 
             ",
         req.name,
-        req.category
+        req.category,
+        now
     )
     .execute(&state.pool)
     .await?;
