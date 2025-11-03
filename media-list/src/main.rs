@@ -19,8 +19,6 @@ const COOKIE_NAME: &str = "beebfam-key";
 #[derive(sqlx::FromRow, Debug, Deserialize, Serialize, Clone, Default)]
 struct Item {
     name: String,
-    active: bool,
-    qty: Option<String>,
     category: Option<String>,
 }
 
@@ -61,7 +59,6 @@ async fn main() -> anyhow::Result<()> {
         .route("/assets/{*file}", get(static_handler))
         .route("/get-items", get(get_items_handler))
         .route("/add-item", post(add_item_handler))
-        .route("/toggle-item", post(toggle_item_handler))
         .route("/delete-item", post(delete_item_handler))
         .with_state(AppState { pool, key });
 
@@ -88,13 +85,7 @@ async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemRes
 #[derive(Deserialize)]
 struct AddItemRequest {
     name: String,
-    qty: Option<String>,
     category: String,
-}
-
-#[derive(Deserialize)]
-struct ToggleItemRequest {
-    name: String,
 }
 
 #[derive(Deserialize)]
@@ -113,75 +104,13 @@ async fn add_item_handler(
     {
         return Err(AppError(anyhow!("Nope, sorry")));
     }
-    let item = sqlx::query_as!(
-        Item,
-        r"
-        SELECT * FROM items WHERE name = ?1
-        ",
-        req.name
-    )
-    .fetch_optional(&state.pool)
-    .await?;
-
-    if let Some(item) = item {
-        sqlx::query!(
-            r"
-            UPDATE items SET active = ?1, qty = ?2, category = ?3 WHERE name = ?4
-            ",
-            true,
-            req.qty,
-            req.category,
-            item.name,
-        )
-        .execute(&state.pool)
-        .await?;
-    } else {
-        sqlx::query!(
-            r"
-            INSERT INTO items VALUES (?1, 1, ?2, ?3) 
-            ",
-            req.name,
-            req.qty,
-            req.category
-        )
-        .execute(&state.pool)
-        .await?;
-    }
-
-    let items = get_items(&state.pool).await?;
-    Ok(Json(ItemResponse { items }))
-}
-
-async fn toggle_item_handler(
-    State(state): State<AppState>,
-    cookies: CookieJar,
-    Json(req): Json<ToggleItemRequest>,
-) -> Result<Json<ItemResponse>, AppError> {
-    if cookies
-        .get(COOKIE_NAME)
-        .is_none_or(|val| val.value().trim() != state.key)
-    {
-        return Err(AppError(anyhow!("Nope, sorry")));
-    }
-
-    let item = sqlx::query_as!(
-        Item,
-        r"
-        SELECT * FROM items WHERE name = ?1
-        ",
-        req.name
-    )
-    .fetch_one(&state.pool)
-    .await?;
-
-    let inverse_active = !item.active;
 
     sqlx::query!(
         r"
-            UPDATE items SET active = ?1 WHERE name = ?2
+            INSERT INTO items VALUES (?1, ?2) 
             ",
-        inverse_active,
-        item.name,
+        req.name,
+        req.category
     )
     .execute(&state.pool)
     .await?;
@@ -189,6 +118,7 @@ async fn toggle_item_handler(
     let items = get_items(&state.pool).await?;
     Ok(Json(ItemResponse { items }))
 }
+
 async fn delete_item_handler(
     State(state): State<AppState>,
     cookies: CookieJar,

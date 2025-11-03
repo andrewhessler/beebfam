@@ -1,2 +1,2 @@
-# Chore Kanban
-Delicious spaghetti
+# Grocery List
+

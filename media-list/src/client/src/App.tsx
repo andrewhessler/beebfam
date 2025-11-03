@@ -3,32 +3,20 @@ import './App.css';
 
 type Item = {
   name: string,
-  active: boolean,
   category: string,
-  qty: string,
 }
 
 const CATEGORIES = [
-  "produce",
-  "deli",
-  "bakery",
-  "meat counter",
-  "dry goods",
-  "dairy",
-  "frozen",
-  "household",
-  "health & beauty",
-  "pet",
-  "amazon",
-  "sewing",
-  "misc"
+  "books",
+  "movies",
+  "games",
+  "shows",
 ];
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
   const newItemRef = useRef(null);
   const [newItem, setNewItem] = useState<string | null>();
-  const [qty, setQty] = useState<string | null>(null);
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [filter, setFilter] = useState<string>("all");
 
@@ -45,8 +33,7 @@ function App() {
     getItems();
   }, [])
 
-  const deleteItem = useCallback(async (item: Item, event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
+  const deleteItem = useCallback(async (item: Item) => {
     const response = await fetch(`/delete-item`, {
       method: "POST",
       body: JSON.stringify({
@@ -69,7 +56,6 @@ function App() {
         method: "POST",
         body: JSON.stringify({
           name: newItem,
-          qty,
           category,
         }),
         headers: {
@@ -82,29 +68,11 @@ function App() {
       const { items } = await response.json();
       setItems(items);
       setNewItem(null);
-      setQty(null);
       if (newItemRef.current) {
         (newItemRef.current as HTMLInputElement).focus();
       }
     }
-  }, [newItem, qty, category])
-
-  const toggleItem = useCallback(async (item: Item) => {
-    const response = await fetch(`/toggle-item`, {
-      method: "POST",
-      body: JSON.stringify({
-        name: item.name
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const { items } = await response.json();
-    setItems(items);
-  }, [])
+  }, [newItem, category])
 
   return (
     <div id="content">
@@ -115,7 +83,6 @@ function App() {
           )}
         </select>
         <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-        <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
       </div>
       <div id="filter">
         <label>filter: </label>
@@ -129,31 +96,12 @@ function App() {
       {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
         <div className="category">
           <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-          {items.filter((item) => item.active && item.category === cat)
+          {items.filter((item) => item.category === cat)
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((item) => (
-              <button className="item" onClick={() => toggleItem(item)}>
+              <button className="item" onClick={() => deleteItem(item)}>
                 <div className="item-card">
                   <div className="item-name">{item.name}</div>
-                  <div className='item-qty'>{item.qty}</div>
-                  <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
-                </div>
-              </button>
-            ))}
-        </div>)
-      )}
-      <h2>Inactive Items</h2>
-      {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
-        <div className="category">
-          <h3>{cat?.length ? cat : "misc"}</h3>
-          {items.filter((item) => !item.active && item.category === cat)
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((item) => (
-              <button className="item" onClick={() => toggleItem(item)}>
-                <div className="item-card">
-                  <div className="item-name">{item.name}</div>
-                  <div className='item-qty'>{item.qty}</div>
-                  <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
                 </div>
               </button>
             ))}
