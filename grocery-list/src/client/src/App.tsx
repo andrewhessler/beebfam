@@ -114,7 +114,14 @@ function App() {
             <option value={cat}>{cat}</option>
           )}
         </select>
-        <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+        <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+        <datalist id="existing-names">
+          {
+            items.map((item) =>
+              <option value={item.name}></option>
+            )
+          }
+        </datalist>
         <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
       </div>
       <div id="filter">
