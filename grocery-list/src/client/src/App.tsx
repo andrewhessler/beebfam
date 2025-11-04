@@ -137,7 +137,7 @@ function App() {
       {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
         <div className="category">
           <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-          {items.filter((item) => item.active && item.category === cat)
+          {items?.filter((item) => item.active && item.category === cat)
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((item) => (
               <button className="item" onClick={() => toggleItem(item)}>
@@ -154,7 +154,7 @@ function App() {
       {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
         <div className="category">
           <h3>{cat?.length ? cat : "misc"}</h3>
-          {items.filter((item) => !item.active && item.category === cat)
+          {items?.filter((item) => !item.active && item.category === cat)
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((item) => (
               <button className="item" onClick={() => toggleItem(item)}>
