@@ -118,7 +118,7 @@ function App() {
         <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
         <datalist id="existing-names">
           {
-            items.map((item) =>
+            items?.map((item) =>
               <option value={item.name}></option>
             )
           }
