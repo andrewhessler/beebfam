@@ -134,7 +134,7 @@ function App() {
           )}
         </select>
       </div>
-      {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
+      {CATEGORIES.filter((cat) => cat === filter || filter === "all" && items.some((item) => item.category === cat && item.active)).map((cat) => (
         <div className="category">
           <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
           {items?.filter((item) => item.active && item.category === cat)
