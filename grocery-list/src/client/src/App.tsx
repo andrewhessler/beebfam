@@ -65,12 +65,13 @@ function App() {
 
   const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
+      const matchedCategory = items.find((item) => item.name == newItem)?.category;
       const response = await fetch(`/add-item`, {
         method: "POST",
         body: JSON.stringify({
           name: newItem,
           qty,
-          category,
+          category: matchedCategory || category,
         }),
         headers: {
           "Content-Type": "application/json"
@@ -79,15 +80,15 @@ function App() {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      const { items } = await response.json();
-      setItems(items);
+      const { fetchedItems } = await response.json();
+      setItems(fetchedItems);
       setNewItem(null);
       setQty(null);
       if (newItemRef.current) {
         (newItemRef.current as HTMLInputElement).focus();
       }
     }
-  }, [newItem, qty, category])
+  }, [newItem, qty, category, items])
 
   const toggleItem = useCallback(async (item: Item) => {
     const response = await fetch(`/toggle-item`, {
