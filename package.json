@@ -1,0 +1,21 @@
+{
+  "name": "beebfam",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Beebfam monorepo",
+  "workspaces": [
+    "mario-picker",
+    "andrew-inbox/src/client",
+    "chore-kanban/src/client",
+    "grocery-list/src/client",
+    "media-list/src/client"
+  ],
+  "scripts": {
+    "build:all": "npm run build --workspaces",
+    "dev:mario": "npm run dev --workspace=mario-picker",
+    "dev:andrew": "npm run dev --workspace=andrew-inbox/src/client",
+    "dev:chores": "npm run dev --workspace=chore-kanban/src/client",
+    "dev:grocery": "npm run dev --workspace=grocery-list/src/client",
+    "dev:media": "npm run dev --workspace=media-list/src/client"
+  }
+}
