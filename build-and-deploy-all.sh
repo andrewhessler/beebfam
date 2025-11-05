@@ -2,8 +2,6 @@
 
 # Build and deploy all immediate subdirectories that contain build-and-deploy.sh
 
-set -e 
-
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 for dir in "$ROOT_DIR"/*/; do
