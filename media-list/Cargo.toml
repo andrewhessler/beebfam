@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.100"
+auth-macro = { path = "../auth-macro/"}
 axum = "0.8.4"
 axum-extra = { version = "0.10.3", features = ["cookie"] }
 chrono = "0.4.42"

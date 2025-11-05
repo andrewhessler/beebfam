@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use axum::{
     Json, Router,
     extract::{Path, State},
@@ -6,7 +5,6 @@ use axum::{
     response::{IntoResponse, Response},
     routing::{get, post},
 };
-use axum_extra::extract::CookieJar;
 use chrono::Utc;
 use dotenvy::dotenv;
 use rust_embed::Embed;
@@ -15,7 +13,6 @@ use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
 use std::{env, fs, net::SocketAddr};
 
 const SECS_IN_DAY: u64 = 60 * 60 * 24;
-const COOKIE_NAME: &str = "beebfam-key";
 
 #[derive(Deserialize, Serialize, Clone, Default, Debug)]
 struct Chore {
@@ -89,18 +86,11 @@ async fn get_chores_handler(
     Ok(Json(ChoreResponse { chores }))
 }
 
+#[auth_macro::auth_guard]
 async fn toggle_chore_handler(
     State(state): State<AppState>,
     Path(id): Path<String>,
-    cookies: CookieJar,
 ) -> Result<Json<ChoreResponse>, AppError> {
-    if cookies
-        .get(COOKIE_NAME)
-        .is_none_or(|val| val.value() != state.key)
-    {
-        return Err(AppError(anyhow!("Nope, sorry")));
-    }
-
     let chore = get_chore_by_id(&id, &state.pool).await?;
     let now = Utc::now().timestamp();
 

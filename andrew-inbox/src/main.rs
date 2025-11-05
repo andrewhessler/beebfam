@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use axum::{
     Json, Router,
     extract::{Path, State},
@@ -7,15 +6,12 @@ use axum::{
     routing::{get, post},
 };
 
-use axum_extra::extract::CookieJar;
 use dotenvy::dotenv;
 use rust_embed::Embed;
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
 use std::{env, fs, net::SocketAddr};
 use uuid::Uuid;
-
-const COOKIE_NAME: &str = "beebfam-key";
 
 #[derive(sqlx::FromRow, Debug, Deserialize, Serialize, Clone, Default)]
 struct Item {
@@ -89,18 +85,11 @@ struct ItemRequest {
     name: String,
 }
 
+#[auth_macro::auth_guard]
 async fn add_item_handler(
     State(state): State<AppState>,
-    cookies: CookieJar,
     Json(req): Json<ItemRequest>,
 ) -> Result<Json<ItemResponse>, AppError> {
-    if cookies
-        .get(COOKIE_NAME)
-        .is_none_or(|val| val.value().trim() != state.key)
-    {
-        return Err(AppError(anyhow!("Nope, sorry")));
-    }
-
     let id = Uuid::new_v4().to_string();
     let now = chrono::Utc::now().timestamp();
     sqlx::query!(
@@ -118,18 +107,11 @@ async fn add_item_handler(
     Ok(Json(ItemResponse { items }))
 }
 
+#[auth_macro::auth_guard]
 async fn delete_item_handler(
     State(state): State<AppState>,
     Path(id): Path<String>,
-    cookies: CookieJar,
 ) -> Result<Json<ItemResponse>, AppError> {
-    if cookies
-        .get(COOKIE_NAME)
-        .is_none_or(|val| val.value().trim() != state.key)
-    {
-        return Err(AppError(anyhow!("Nope, sorry")));
-    }
-
     sqlx::query!(
         r"
         DELETE FROM items WHERE id = ?1
