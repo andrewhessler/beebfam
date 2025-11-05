@@ -10,7 +10,7 @@ npm install
 
 npm run build
 
-sudo rm /var/lib/mario-picker/*
+sudo rm -r /var/lib/mario-picker/*
 
 echo "Moving dist to /var/lib/mario-picker"
 sudo cp $parent_path/dist/* /var/lib/mario-picker/
