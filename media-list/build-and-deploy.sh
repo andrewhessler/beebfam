@@ -27,7 +27,7 @@ if [ ! -f "$parent_path/target/release/$service" ]; then
   exit 1
 fi
 
-# Move the executable to /usr/local/bin (sudo may be required)
+# Move the executable to /usr/local/bin
 echo "Moving executable to /usr/local/bin/$service"
 sudo mv $parent_path/target/release/$service /usr/local/bin/$service
 

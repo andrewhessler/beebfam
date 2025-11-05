@@ -25,7 +25,7 @@ if [ ! -f "$parent_path/target/release/chore-kanban" ]; then
   exit 1
 fi
 
-# Move the executable to /usr/local/bin (sudo may be required)
+# Move the executable to /usr/local/bin
 echo "Moving executable to /usr/local/bin/chore-kanban"
 sudo mv $parent_path/target/release/chore-kanban /usr/local/bin/chore-kanban
 
