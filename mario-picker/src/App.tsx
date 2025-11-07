@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import './App.css'
+import { useCallback, useState } from 'react';
+import './App.css';
 
 const ALL_OPTIONS = [
   "mario bros' circuit", "crown city", "desert hills", "koopa troopa beach", "moo moo meadows", "dk spaceport", "whistlestop summit",
