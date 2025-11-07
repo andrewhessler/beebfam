@@ -10,6 +10,12 @@
   box-sizing: border-box;
 }
 
+#hub-link {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
 #items {
   display: flex;
   flex-direction: column;

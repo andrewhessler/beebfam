@@ -64,16 +64,19 @@ function App() {
     }
   })
   return (
-    <div id="items">
-      <input ref={inputRef} type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-      {items.sort((a, b) => b.created_at - a.created_at).map((item) =>
-        <button className="item" onClick={() => deleteItem(item)}>
-          <div className="item-card">
-            <div className="item-name">{item.name}</div>
-          </div>
-        </button>
-      )}
-    </div>
+    <>
+      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
+      <div id="items">
+        <input ref={inputRef} type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+        {items.sort((a, b) => b.created_at - a.created_at).map((item) =>
+          <button className="item" onClick={() => deleteItem(item)}>
+            <div className="item-card">
+              <div className="item-name">{item.name}</div>
+            </div>
+          </button>
+        )}
+      </div>
+    </>
   )
 }
 

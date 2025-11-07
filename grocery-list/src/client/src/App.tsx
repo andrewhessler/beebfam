@@ -108,66 +108,69 @@ function App() {
   }, [])
 
   return (
-    <div id="content">
-      <div id="input">
-        <select id="input-select" onChange={(event) => setCategory(event.target.value)}>
-          {CATEGORIES.map((cat) =>
-            <option value={cat}>{cat}</option>
-          )}
-        </select>
-        <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-        <datalist id="existing-names">
-          {
-            items?.map((item) =>
-              <option value={item.name}></option>
-            )
-          }
-        </datalist>
-        <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
+    <>
+      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
+      <div id="content">
+        <div id="input">
+          <select id="input-select" onChange={(event) => setCategory(event.target.value)}>
+            {CATEGORIES.map((cat) =>
+              <option value={cat}>{cat}</option>
+            )}
+          </select>
+          <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+          <datalist id="existing-names">
+            {
+              items?.map((item) =>
+                <option value={item.name}></option>
+              )
+            }
+          </datalist>
+          <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
+        </div>
+        <div id="filter">
+          <label>filter: </label>
+          <select onChange={(event) => setFilter(event.target.value)}>
+            <option value="all">all</option>
+            {CATEGORIES.map((cat) =>
+              <option value={cat}>{cat}</option>
+            )}
+          </select>
+        </div>
+        {CATEGORIES.filter((cat) => cat === filter || filter === "all" && items.some((item) => item.category === cat && item.active)).map((cat) => (
+          <div className="category">
+            <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
+            {items?.filter((item) => item.active && item.category === cat)
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((item) => (
+                <button className="item" onClick={() => toggleItem(item)}>
+                  <div className="item-card">
+                    <div className="item-name">{item.name}</div>
+                    <div className='item-qty'>{item.qty}</div>
+                    <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
+                  </div>
+                </button>
+              ))}
+          </div>)
+        )}
+        <h2>Inactive Items</h2>
+        {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
+          <div className="category">
+            <h3>{cat?.length ? cat : "misc"}</h3>
+            {items?.filter((item) => !item.active && item.category === cat)
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((item) => (
+                <button className="item" onClick={() => toggleItem(item)}>
+                  <div className="item-card">
+                    <div className="item-name">{item.name}</div>
+                    <div className='item-qty'>{item.qty}</div>
+                    <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
+                  </div>
+                </button>
+              ))}
+          </div>)
+        )}
       </div>
-      <div id="filter">
-        <label>filter: </label>
-        <select onChange={(event) => setFilter(event.target.value)}>
-          <option value="all">all</option>
-          {CATEGORIES.map((cat) =>
-            <option value={cat}>{cat}</option>
-          )}
-        </select>
-      </div>
-      {CATEGORIES.filter((cat) => cat === filter || filter === "all" && items.some((item) => item.category === cat && item.active)).map((cat) => (
-        <div className="category">
-          <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-          {items?.filter((item) => item.active && item.category === cat)
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((item) => (
-              <button className="item" onClick={() => toggleItem(item)}>
-                <div className="item-card">
-                  <div className="item-name">{item.name}</div>
-                  <div className='item-qty'>{item.qty}</div>
-                  <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
-                </div>
-              </button>
-            ))}
-        </div>)
-      )}
-      <h2>Inactive Items</h2>
-      {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
-        <div className="category">
-          <h3>{cat?.length ? cat : "misc"}</h3>
-          {items?.filter((item) => !item.active && item.category === cat)
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((item) => (
-              <button className="item" onClick={() => toggleItem(item)}>
-                <div className="item-card">
-                  <div className="item-name">{item.name}</div>
-                  <div className='item-qty'>{item.qty}</div>
-                  <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
-                </div>
-              </button>
-            ))}
-        </div>)
-      )}
-    </div>
+    </>
   )
 }
 

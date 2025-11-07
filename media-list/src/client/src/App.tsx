@@ -76,40 +76,43 @@ function App() {
   }, [newItem, category])
 
   return (
-    <div id="content">
-      <div id="input">
-        <select id="input-select" onChange={(event) => setCategory(event.target.value)}>
-          {CATEGORIES.map((cat) =>
-            <option value={cat}>{cat}</option>
+    <>
+      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
+      <div id="content">
+        <div id="input">
+          <select id="input-select" onChange={(event) => setCategory(event.target.value)}>
+            {CATEGORIES.map((cat) =>
+              <option value={cat}>{cat}</option>
+            )}
+          </select>
+          <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+        </div>
+        <div id="filter">
+          <label>filter: </label>
+          <select onChange={(event) => setFilter(event.target.value)}>
+            <option value="all">all</option>
+            {CATEGORIES.map((cat) =>
+              <option value={cat}>{cat}</option>
+            )}
+          </select>
+        </div>
+        {CATEGORIES.filter((cat) => cat === filter || filter === "all")
+          .map((cat) => (
+            <div className="category">
+              <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
+              {items.filter((item) => item.category === cat)
+                .sort((a, b) => a.created_at - b.created_at)
+                .map((item) => (
+                  <button className="item" onClick={() => deleteItem(item)}>
+                    <div className="item-card">
+                      <div className="item-name">{item.name}</div>
+                    </div>
+                  </button>
+                ))}
+            </div>)
           )}
-        </select>
-        <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
       </div>
-      <div id="filter">
-        <label>filter: </label>
-        <select onChange={(event) => setFilter(event.target.value)}>
-          <option value="all">all</option>
-          {CATEGORIES.map((cat) =>
-            <option value={cat}>{cat}</option>
-          )}
-        </select>
-      </div>
-      {CATEGORIES.filter((cat) => cat === filter || filter === "all")
-        .map((cat) => (
-          <div className="category">
-            <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-            {items.filter((item) => item.category === cat)
-              .sort((a, b) => a.created_at - b.created_at)
-              .map((item) => (
-                <button className="item" onClick={() => deleteItem(item)}>
-                  <div className="item-card">
-                    <div className="item-name">{item.name}</div>
-                  </div>
-                </button>
-              ))}
-          </div>)
-        )}
-    </div>
+    </>
   )
 }
 
