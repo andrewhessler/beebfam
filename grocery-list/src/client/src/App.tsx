@@ -119,6 +119,7 @@ function App() {
             )}
           </select>
           <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+          <input type="text" list="existing-names" value="" placeholder='testing' />
           <datalist id="existing-names">
             {
               items?.map((item) =>
