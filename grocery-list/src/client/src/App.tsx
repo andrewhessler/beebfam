@@ -64,8 +64,8 @@ function App() {
   }, [])
 
   const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
-    event.stopPropagation();
     if (event.key === "Enter") {
+      event.preventDefault();
       const matchedCategory = items.find((item) => item.name == newItem)?.category;
       const response = await fetch(`/add-item`, {
         method: "POST",
