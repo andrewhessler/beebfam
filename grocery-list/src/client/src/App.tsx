@@ -85,9 +85,6 @@ function App() {
       setItems(fetchedItems);
       setNewItem(null);
       setQty(null);
-      if (newItemRef.current) {
-        (newItemRef.current as HTMLInputElement).focus();
-      }
     }
   }, [newItem, qty, category, items])
 
@@ -119,7 +116,6 @@ function App() {
             )}
           </select>
           <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-          <input type="text" list="existing-names" value={newItem ? newItem : ""} placeholder='testing' onChange={(event) => setNewItem(event.target.value)} />
           <datalist id="existing-names">
             {
               items?.map((item) =>
