@@ -83,7 +83,7 @@ function App() {
       }
       const { items: fetchedItems } = await response.json();
       setItems(fetchedItems);
-      setNewItem(null);
+      setNewItem("");
       setQty(null);
     }
   }, [newItem, qty, category, items])
