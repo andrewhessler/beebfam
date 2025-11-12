@@ -26,7 +26,10 @@ const CATEGORIES = [
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
+
+  // For some reason when we add new items to the datalist it opens, so this is in separate state and not updated after first fetch
   const [itemsForSelect, setItemsForSelect] = useState<Item[]>([]);
+
   const newItemRef = useRef(null);
   const [newItem, setNewItem] = useState<string | null>();
   const [qty, setQty] = useState<string | null>(null);
