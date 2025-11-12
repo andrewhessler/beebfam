@@ -26,6 +26,7 @@ const CATEGORIES = [
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
+  const [itemsForSelect, setItemsForSelect] = useState<Item[]>([]);
   const newItemRef = useRef(null);
   const [newItem, setNewItem] = useState<string | null>();
   const [qty, setQty] = useState<string | null>(null);
@@ -41,6 +42,7 @@ function App() {
       }
       const { items } = await response.json();
       setItems(items);
+      setItemsForSelect(items);
     }
     getItems();
   }, [])
@@ -81,8 +83,8 @@ function App() {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      await response.json();
-      // setItems(fetchedItems);
+      const { items: fetchedItems } = await response.json();
+      setItems(fetchedItems);
       setNewItem("");
       setQty(null);
     }
@@ -118,7 +120,7 @@ function App() {
           <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
           <datalist id="existing-names">
             {
-              items?.map((item) =>
+              itemsForSelect?.map((item) =>
                 <option value={item.name}></option>
               )
             }
