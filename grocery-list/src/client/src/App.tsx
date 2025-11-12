@@ -81,7 +81,7 @@ function App() {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      const { items: fetchedItems } = await response.json();
+      await response.json();
       // setItems(fetchedItems);
       setNewItem("");
       setQty(null);
