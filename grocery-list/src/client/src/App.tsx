@@ -65,26 +65,26 @@ function App() {
 
   const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      event.preventDefault();
-      const matchedCategory = items.find((item) => item.name == newItem)?.category;
-      const response = await fetch(`/add-item`, {
-        method: "POST",
-        body: JSON.stringify({
-          name: newItem,
-          qty,
-          category: matchedCategory || category,
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const { items: fetchedItems } = await response.json();
-      setItems(fetchedItems);
-      setNewItem("");
-      setQty(null);
+      // event.preventDefault();
+      // const matchedCategory = items.find((item) => item.name == newItem)?.category;
+      // const response = await fetch(`/add-item`, {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     name: newItem,
+      //     qty,
+      //     category: matchedCategory || category,
+      //   }),
+      //   headers: {
+      //     "Content-Type": "application/json"
+      //   }
+      // })
+      // if (!response.ok) {
+      //   throw new Error('Network response was not ok');
+      // }
+      // const { items: fetchedItems } = await response.json();
+      // setItems(fetchedItems);
+      // setNewItem("");
+      // setQty(null);
     }
   }, [newItem, qty, category, items])
 
