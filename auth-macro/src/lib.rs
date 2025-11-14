@@ -19,6 +19,7 @@ pub fn auth_guard(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let expanded = quote! {
         #func_vis #func_asyncness fn #func_name(#func_args) #func_ret {
             if cookies.get("beebfam-key").is_none_or(|val| val.value().trim() != state.key) {
+                log::warn!("Access denied");
                 return Err(AppError(anyhow::anyhow!("Nope, sorry")));
             }
             #func_block
