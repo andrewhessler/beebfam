@@ -1,12 +1,13 @@
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{ConnectInfo, Path, State},
     http::{StatusCode, Uri, header},
     response::{IntoResponse, Response},
     routing::{get, post},
 };
 use chrono::Utc;
 use dotenvy::dotenv;
+use log::info;
 use rust_embed::Embed;
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
@@ -38,6 +39,7 @@ struct AppState {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    env_logger::init();
     _ = dotenv();
     let raw_database_url = env::var("DATABASE_URL").expect("DATABASE_URL to be defined");
     let database_url = raw_database_url.split(":").last().unwrap();
@@ -65,11 +67,16 @@ async fn main() -> anyhow::Result<()> {
         .with_state(AppState { pool, key });
 
     println!("listening on {addr}");
-    _ = axum::serve(listener, app).await;
+    _ = axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await;
     Ok(())
 }
 
-async fn index_handler() -> impl IntoResponse {
+async fn index_handler(ConnectInfo(addr): ConnectInfo<SocketAddr>) -> impl IntoResponse {
+    info!("{addr} connected");
     static_handler("/index.html".parse::<Uri>().unwrap()).await
 }
 
