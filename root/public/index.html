@@ -30,12 +30,18 @@
 
     <div id="light-control" class="fw">
       <button class="fw" onclick="turnOffLights()">Lights Off</button>
-      <button class="fw" onclick="toggleLivingRoom(true)">Living Room On</button>
-      <button class="fw" onclick="toggleLivingRoom(false)">Living Room Off</button>
-      <button class="fw" onclick="toggleBedroom(true)">Bedroom On</button>
-      <button class="fw" onclick="toggleBedroom(false)">Bedroom Off</button>
-      <button class="fw" onclick="toggleStudio(true)">Studio On</button>
-      <button class="fw" onclick="toggleStudio(false)">Studio Off</button>
+      <div class="light-control-group">
+        <button class="hw" onclick="toggleLivingRoom(true)">Living Room On</button>
+        <button class="hw" onclick="toggleLivingRoom(false)">Living Room Off</button>
+      </div>
+      <div class="light-control-group">
+        <button class="hw" onclick="toggleBedroom(true)">Bedroom On</button>
+        <button class="hw" onclick="toggleBedroom(false)">Bedroom Off</button>
+      </div>
+      <div class="light-control-group">
+        <button class="hw" onclick="toggleStudio(true)">Studio On</button>
+        <button class="hw" onclick="toggleStudio(false)">Studio Off</button>
+      </div>
     </div>
   </div>
 

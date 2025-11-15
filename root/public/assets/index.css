@@ -40,8 +40,17 @@
   max-width: 600px;
 }
 
+.light-control-group {
+  display: flex;
+  justify-content: space-between;
+}
+
 .fw {
   width: 100%;
+}
+
+.hw {
+  width: 49%;
 }
 
 input {
