@@ -401,6 +401,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "exercise-tracker"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "auth-macro",
+ "axum",
+ "axum-extra",
+ "chrono",
+ "dotenvy",
+ "log",
+ "mime_guess",
+ "rust-embed",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "flume"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -926,26 +946,6 @@ checksum = "d89e7ee0cfbedfc4da3340218492196241d89eefb6dab27de5df917a6d2e78cf"
 dependencies = [
  "cfg-if",
  "digest",
-]
-
-[[package]]
-name = "media-list"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "auth-macro",
- "axum",
- "axum-extra",
- "chrono",
- "dotenvy",
- "log",
- "mime_guess",
- "rust-embed",
- "serde",
- "serde_json",
- "sqlx",
- "tokio",
- "tracing",
 ]
 
 [[package]]

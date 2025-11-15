@@ -1,2 +1,1 @@
-# Chore Kanban
-Delicious spaghetti
+# Media List
