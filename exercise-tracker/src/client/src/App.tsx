@@ -76,7 +76,7 @@ function App() {
 
   useEffect(() => {
     async function getItems() {
-      const response = await fetch("http://localhost:8085/get-items");
+      const response = await fetch("/get-items");
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -88,7 +88,7 @@ function App() {
 
   const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      const response = await fetch(`http://localhost:8085/add-item`, {
+      const response = await fetch(`/add-item`, {
         method: "POST",
         body: JSON.stringify({
           ...exercise
