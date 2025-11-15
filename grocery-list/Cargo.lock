@@ -541,6 +541,7 @@ dependencies = [
  "axum-extra",
  "chrono",
  "dotenvy",
+ "log",
  "mime_guess",
  "rust-embed",
  "serde",

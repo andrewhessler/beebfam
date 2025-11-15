@@ -7,25 +7,32 @@
 <body>
   <div id="root">
     <div id="locations">
-      <div class="location">
-        <a href="https://ainbox.beebfam.org"><button class="location">Andrew Inbox</button></a>
+      <div class="fw">
+        <a href="https://ainbox.beebfam.org"><button class="fw">Andrew Inbox</button></a>
       </div>
-      <div class="location">
-        <a href="https://chores.beebfam.org"><button class="location">Chores</button></a>
+      <div class="fw">
+        <a href="https://chores.beebfam.org"><button class="fw">Chores</button></a>
       </div>
-      <div class="location">
-        <a href="https://mario.beebfam.org"><button class="location">Mario</button></a>
+      <div class="fw">
+        <a href="https://mario.beebfam.org"><button class="fw">Mario</button></a>
       </div>
-      <div class="location">
-        <a href="https://media.beebfam.org"><button class="location">Media</button></a>
+      <div class="fw">
+        <a href="https://media.beebfam.org"><button class="fw">Media</button></a>
       </div>
-      <div class="location">
-        <a href="https://supply.beebfam.org"><button class="location">Shopping</button></a>
+      <div class="fw">
+        <a href="https://supply.beebfam.org"><button class="fw">Shopping</button></a>
       </div>
     </div>
 
     <div id="login-block">
       <input type="text" id="password" onfocus="this.value = this.value === 'Login needed' ? '' : this.value" /> <button onclick="login()">Login</button>
+    </div>
+
+    <div id="light-control" class="fw">
+      <button class="fw">Turn Off Lights</button>
+      <button class="fw">Turn On Living Room</button>
+      <button class="fw">Turn On Bedroom</button>
+      <button class="fw">Turn On Studio</button>
     </div>
   </div>
 
@@ -49,6 +56,94 @@
       }
     }
     login()
+    const turnOffLights = async () => {
+      const response = await fetch('/light-control', {
+        method: "POST",
+        body: JSON.stringify({
+          requests: [
+            {
+              name: "tall living room",
+              toggle: false,
+            },
+            {
+              name: "small living room",
+              toggle: false,
+            },
+            {
+              name: "bubble lamp",
+              toggle: false,
+            },
+            {
+              name: "bedroom black",
+              toggle: false,
+            },
+            {
+              name: "studio lights",
+              toggle: false,
+            },
+          ]
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    }
+    const turnOnLivingRoom = async () => {
+      const response = await fetch('/light-control', {
+        method: "POST",
+        body: JSON.stringify({
+          requests: [
+            {
+              name: "tall living room",
+              toggle: true,
+            },
+            {
+              name: "small living room",
+              toggle: true,
+            },
+          ]
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    }
+    const turnOnBedroom = async () => {
+      const response = await fetch('/light-control', {
+        method: "POST",
+        body: JSON.stringify({
+          requests: [
+            {
+              name: "bedroom black",
+              toggle: true,
+            },
+          ]
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    }
+    const turnOnStudio = async () => {
+      const response = await fetch('/light-control', {
+        method: "POST",
+        body: JSON.stringify({
+          requests: [
+            {
+              name: "bubble lamp",
+              toggle: true,
+            },
+            {
+              name: "studio lights",
+              toggle: true,
+            },
+          ]
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    }
   </script>
 </body>
 
