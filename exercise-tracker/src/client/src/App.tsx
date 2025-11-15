@@ -50,6 +50,29 @@ function App() {
   const [exercise, setExercise] = useState<Exercise>(EXERCISES["biking"]);
   const [exerciseHistory, setExerciseHistory] = useState<Item[]>([]);
 
+  const dateGroupedHistory = useCallback(() => {
+    const dateGroups: Record<string, Item[]> = {};
+
+    exerciseHistory.forEach((item) => {
+      const date = new Date(item.date * 1000);
+      const dateKey = date.toISOString().split('T')[0];
+
+      if (!dateGroups[dateKey]) {
+        dateGroups[dateKey] = [];
+      }
+      dateGroups[dateKey].push(item);
+    });
+
+    // Sort exercises by name
+    Object.keys(dateGroups).forEach((dateKey) => {
+      dateGroups[dateKey].sort((a, b) => a.name.localeCompare(b.name));
+    });
+
+    // Sort dates
+    const sortedKeys = Object.keys(dateGroups).sort((a, b) => b.localeCompare(a));
+
+    return { dateGroups, sortedKeys };
+  }, [exerciseHistory]);
 
   useEffect(() => {
     async function getItems() {
@@ -126,16 +149,24 @@ function App() {
           }
         </div>
         <div id="exercise-history">
-          {exerciseHistory.map((item) => (
-            item.weight ?
-              <div id="exercise-item">
-                {item.name} {item.weight + "x" + item.sets + "x" + item.reps}
+          {(() => {
+            const { dateGroups, sortedKeys } = dateGroupedHistory();
+            return sortedKeys.map((dateKey) => (
+              <div className="date-group">
+                <h3>{dateKey}</h3>
+                {dateGroups[dateKey].map((item) => (
+                  item.weight ?
+                    <div className="exercise-item">
+                      {item.name} {item.weight + "x" + item.sets + "x" + item.reps}
+                    </div>
+                    :
+                    <div className="exercise-item">
+                      {item.name} dist: {item.distance} dur: {item.duration_min}
+                    </div>
+                ))}
               </div>
-              :
-              <div id="exercise-item">
-                {item.name} dist: {item.distance} dur: {item.duration_min}
-              </div>
-          ))}
+            ));
+          })()}
         </div>
       </div>
     </>

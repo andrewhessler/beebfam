@@ -62,8 +62,8 @@ async fn main() -> anyhow::Result<()> {
 
     sqlx::migrate!("./migrations").run(&pool).await?;
 
-    // let key_path = std::env::var("KEY_PATH")?;
-    // let key = fs::read_to_string(key_path)?.trim().to_string();
+    let key_path = std::env::var("KEY_PATH")?;
+    let key = fs::read_to_string(key_path)?.trim().to_string();
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8085));
     let listener = tokio::net::TcpListener::bind(addr).await?;
@@ -75,10 +75,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/assets/{*file}", get(static_handler))
         .route("/get-items", get(get_items_handler))
         .route("/add-item", post(add_item_handler))
-        .with_state(AppState {
-            pool,
-            key: "yes".to_string(),
-        });
+        .with_state(AppState { pool, key });
 
     println!("listening on {addr}");
     _ = axum::serve(listener, app).await;
@@ -100,14 +97,14 @@ async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemRes
     Ok(Json(ItemResponse { items }))
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct AerobicRequest {
     name: String,
     duration_min: Option<f64>,
     distance: Option<f64>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct AnaerobicRequest {
     name: String,
     weight: Option<f64>,
@@ -115,8 +112,8 @@ struct AnaerobicRequest {
     reps: Option<i64>,
 }
 
-#[derive(Deserialize)]
-#[serde(untagged)]
+#[derive(Deserialize, Debug)]
+#[serde(tag = "type", rename_all = "lowercase")]
 enum ExerciseItemRequest {
     Aerobic(AerobicRequest),
     Anaerobic(AnaerobicRequest),
@@ -129,6 +126,7 @@ async fn add_item_handler(
 ) -> Result<Json<ItemResponse>, AppError> {
     let now = chrono::Utc::now().timestamp();
 
+    println!("{req:?}");
     match req {
         ExerciseItemRequest::Aerobic(req) => {
             sqlx::query!(
