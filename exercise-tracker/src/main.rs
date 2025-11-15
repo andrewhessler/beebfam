@@ -32,6 +32,7 @@ struct AnaerobicItem {
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
+#[serde(untagged)]
 enum ExerciseItem {
     Aerobic(AerobicItem),
     Anaerobic(AnaerobicItem),
@@ -61,10 +62,10 @@ async fn main() -> anyhow::Result<()> {
 
     sqlx::migrate!("./migrations").run(&pool).await?;
 
-    let key_path = std::env::var("KEY_PATH")?;
-    let key = fs::read_to_string(key_path)?.trim().to_string();
+    // let key_path = std::env::var("KEY_PATH")?;
+    // let key = fs::read_to_string(key_path)?.trim().to_string();
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8084));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8085));
     let listener = tokio::net::TcpListener::bind(addr).await?;
     let addr = listener.local_addr()?;
 
@@ -74,7 +75,10 @@ async fn main() -> anyhow::Result<()> {
         .route("/assets/{*file}", get(static_handler))
         .route("/get-items", get(get_items_handler))
         .route("/add-item", post(add_item_handler))
-        .with_state(AppState { pool, key });
+        .with_state(AppState {
+            pool,
+            key: "yes".to_string(),
+        });
 
     println!("listening on {addr}");
     _ = axum::serve(listener, app).await;
@@ -97,14 +101,9 @@ async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemRes
 }
 
 #[derive(Deserialize)]
-struct AddItemRequest {
-    request: ExerciseItemRequest,
-}
-
-#[derive(Deserialize)]
 struct AerobicRequest {
     name: String,
-    duration: Option<f64>,
+    duration_min: Option<f64>,
     distance: Option<f64>,
 }
 
@@ -117,6 +116,7 @@ struct AnaerobicRequest {
 }
 
 #[derive(Deserialize)]
+#[serde(untagged)]
 enum ExerciseItemRequest {
     Aerobic(AerobicRequest),
     Anaerobic(AnaerobicRequest),
@@ -125,18 +125,18 @@ enum ExerciseItemRequest {
 #[auth_macro::auth_guard]
 async fn add_item_handler(
     State(state): State<AppState>,
-    Json(req): Json<AddItemRequest>,
+    Json(req): Json<ExerciseItemRequest>,
 ) -> Result<Json<ItemResponse>, AppError> {
     let now = chrono::Utc::now().timestamp();
 
-    match req.request {
+    match req {
         ExerciseItemRequest::Aerobic(req) => {
             sqlx::query!(
                 r"
                 INSERT INTO aerobic (name, duration_min, distance, date) VALUES (?1, ?2, ?3, ?4) 
                 ",
                 req.name,
-                req.duration,
+                req.duration_min,
                 req.distance,
                 now
             )
@@ -163,6 +163,7 @@ async fn add_item_handler(
     Ok(Json(ItemResponse { items }))
 }
 
+/// used to return state after mutations and for initial state grab
 async fn get_items(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<ExerciseItem>> {
     let aerobic_items = sqlx::query_as!(
         AerobicItem,

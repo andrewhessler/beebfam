@@ -1,63 +1,74 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 
 type Item = {
   name: string,
-  category: string,
-  created_at: number,
+  duration_min?: number,
+  distance?: number,
+  weight?: number,
+  sets?: number,
+  reps?: number,
+  date: number,
 }
 
-const CATEGORIES = [
-  "books",
-  "movies",
-  "games",
-  "shows",
-];
+type ExerciseType = "anaerobic" | "aerobic";
+
+type Exercise = {
+  name: string,
+  type: ExerciseType,
+  duration_min?: number,
+  distance?: number,
+  weight?: number,
+  sets?: number,
+  reps?: number,
+}
+
+const EXERCISES: Record<string, Exercise> = {
+  "biking": {
+    name: "biking",
+    type: "aerobic",
+    duration_min: 25,
+    distance: 9,
+  },
+  "hand grippers": {
+    name: "hand grippers",
+    type: "anaerobic",
+    weight: 20,
+    sets: 3,
+    reps: 10,
+  },
+  "wrist curls": {
+    name: "wrist curls",
+    type: "anaerobic",
+    weight: 10,
+    sets: 3,
+    reps: 10,
+  }
+};
 
 function App() {
-  const [items, setItems] = useState<Item[]>([]);
-  const newItemRef = useRef(null);
-  const [newItem, setNewItem] = useState<string | null>();
-  const [category, setCategory] = useState<string>(CATEGORIES[0]);
-  const [filter, setFilter] = useState<string>("all");
+  const [exercise, setExercise] = useState<Exercise>(EXERCISES["biking"]);
+  const [exerciseHistory, setExerciseHistory] = useState<Item[]>([]);
 
 
   useEffect(() => {
     async function getItems() {
-      const response = await fetch("/get-items");
+      const response = await fetch("http://localhost:8085/get-items");
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const { items } = await response.json();
-      setItems(items);
+      setExerciseHistory(items);
     }
     getItems();
   }, [])
 
-  const deleteItem = useCallback(async (item: Item) => {
-    const response = await fetch(`/delete-item`, {
-      method: "POST",
-      body: JSON.stringify({
-        name: item.name
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const { items } = await response.json();
-    setItems(items);
-  }, [])
-
   const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      const response = await fetch(`/add-item`, {
+      const response = await fetch(`http://localhost:8085/add-item`, {
         method: "POST",
         body: JSON.stringify({
-          name: newItem,
-          category,
+          ...exercise
         }),
         headers: {
           "Content-Type": "application/json"
@@ -67,50 +78,65 @@ function App() {
         throw new Error('Network response was not ok');
       }
       const { items } = await response.json();
-      setItems(items);
-      setNewItem(null);
-      if (newItemRef.current) {
-        (newItemRef.current as HTMLInputElement).focus();
-      }
+      setExerciseHistory(items);
     }
-  }, [newItem, category])
+  }, [exercise])
 
   return (
     <>
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
         <div id="input">
-          <select id="input-select" onChange={(event) => setCategory(event.target.value)}>
-            {CATEGORIES.map((cat) =>
-              <option value={cat}>{cat}</option>
+          <select id="input-select" onChange={(event) => setExercise(EXERCISES[event.target.value])}>
+            {Object.keys(EXERCISES).map((ex) =>
+              <option key={ex} value={ex}>{ex}</option>
             )}
           </select>
-          <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+          {exercise.type === "aerobic" ?
+            (<>
+              <div>
+                Duration: <input type="text" onKeyDown={addItem}
+                  onChange={(event) => setExercise({ ...exercise, duration_min: parseFloat(event.target.value) })}
+                  value={exercise.duration_min || ''}></input>
+              </div>
+              <div>
+                Distance: <input type="text" onKeyDown={addItem}
+                  onChange={(event) => setExercise({ ...exercise, distance: parseFloat(event.target.value) })}
+                  value={exercise.distance || ''}></input>
+              </div>
+            </>)
+            :
+            (<>
+              <div>
+                Weight: <input type="text" onKeyDown={addItem}
+                  onChange={(event) => setExercise({ ...exercise, weight: parseFloat(event.target.value) })}
+                  value={exercise.weight || ''}></input>
+              </div>
+              <div>
+                Sets: <input type="text" onKeyDown={addItem}
+                  onChange={(event) => setExercise({ ...exercise, sets: parseInt(event.target.value) })}
+                  value={exercise.sets || ''}></input>
+              </div>
+              <div>
+                Reps: <input type="text" onKeyDown={addItem}
+                  onChange={(event) => setExercise({ ...exercise, reps: parseInt(event.target.value) })}
+                  value={exercise.reps || ''}></input>
+              </div>
+            </>)
+          }
         </div>
-        <div id="filter">
-          <label>filter: </label>
-          <select onChange={(event) => setFilter(event.target.value)}>
-            <option value="all">all</option>
-            {CATEGORIES.map((cat) =>
-              <option value={cat}>{cat}</option>
-            )}
-          </select>
+        <div id="exercise-history">
+          {exerciseHistory.map((item) => (
+            item.weight ?
+              <div id="exercise-item">
+                {item.name} {item.weight + "x" + item.sets + "x" + item.reps}
+              </div>
+              :
+              <div id="exercise-item">
+                {item.name} dist: {item.distance} dur: {item.duration_min}
+              </div>
+          ))}
         </div>
-        {CATEGORIES.filter((cat) => cat === filter || filter === "all")
-          .map((cat) => (
-            <div className="category">
-              <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-              {items.filter((item) => item.category === cat)
-                .sort((a, b) => a.created_at - b.created_at)
-                .map((item) => (
-                  <button className="item" onClick={() => deleteItem(item)}>
-                    <div className="item-card">
-                      <div className="item-name">{item.name}</div>
-                    </div>
-                  </button>
-                ))}
-            </div>)
-          )}
       </div>
     </>
   )
