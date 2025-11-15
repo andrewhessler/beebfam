@@ -30,12 +30,12 @@
 
     <div id="light-control" class="fw">
       <button class="fw" onclick="turnOffLights()">Turn Off Lights</button>
-      <button class="fw" onclick="() => toggleLivingRoom(true)">Turn On Living Room</button>
-      <button class="fw" onclick="() => toggleLivingRoom(false)">Turn Off Living Room</button>
-      <button class="fw" onclick="() => toggleBedroom(true)">Turn On Bedroom</button>
-      <button class="fw" onclick="() => toggleBedroom(false)">Turn Off Bedroom</button>
-      <button class="fw" onclick="() => toggleStudio(true)">Turn On Studio</button>
-      <button class="fw" onclick="() => toggleStudio(false)">Turn Off Studio</button>
+      <button class="fw" onclick="toggleLivingRoom(true)">Turn On Living Room</button>
+      <button class="fw" onclick="toggleLivingRoom(false)">Turn Off Living Room</button>
+      <button class="fw" onclick="toggleBedroom(true)">Turn On Bedroom</button>
+      <button class="fw" onclick="toggleBedroom(false)">Turn Off Bedroom</button>
+      <button class="fw" onclick="toggleStudio(true)">Turn On Studio</button>
+      <button class="fw" onclick="toggleStudio(false)">Turn Off Studio</button>
     </div>
   </div>
 
@@ -91,7 +91,7 @@
         }
       })
     }
-    const toggleLivingRoom = async (onOff: boolean) => {
+    const toggleLivingRoom = async (onOff) => {
       const response = await fetch('/light-control', {
         method: "POST",
         body: JSON.stringify({
@@ -111,7 +111,7 @@
         }
       })
     }
-    const toggleBedroom = async (onOff: boolean) => {
+    const toggleBedroom = async (onOff) => {
       const response = await fetch('/light-control', {
         method: "POST",
         body: JSON.stringify({
@@ -127,7 +127,7 @@
         }
       })
     }
-    const toggleStudio = async (onOff: boolean) => {
+    const toggleStudio = async (onOff) => {
       const response = await fetch('/light-control', {
         method: "POST",
         body: JSON.stringify({
