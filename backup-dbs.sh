@@ -19,13 +19,11 @@ for dir in "$script_dir"/*/; do
             source_db="/var/lib/$service/$db"
             backup_file="$backup_dir/${service}_$(date +%Y%m%d_%H%M%S).db"
             
-            # Check if source database exists
             if [ -f "$source_db" ]; then
                 echo "Backing up $service..."
                 echo "Source: $source_db"
                 echo "Destination: $backup_file"
                 
-                # Use sqlite3 .backup command
                 if sqlite3 "$source_db" ".backup '$backup_file'"; then
                     echo "Backup successful"
                     ((backup_count++))
@@ -41,3 +39,17 @@ for dir in "$script_dir"/*/; do
 done
 
 echo "Backup complete. $backup_count database(s) backed up."
+echo ""
+
+if [ $backup_count -gt 0 ]; then
+    cd "$backup_dir" || exit 1
+    
+    git add *.db
+    
+    commit_date=$(date +"%Y-%m-%d %H:%M:%S")
+    git commit -m "$commit_date Backup"
+    
+    git push origin main
+else
+    echo "No backups created, skipping git operations."
+fi
