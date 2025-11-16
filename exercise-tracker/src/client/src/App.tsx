@@ -43,6 +43,13 @@ const EXERCISES: Record<string, Exercise> = {
     weight: 10,
     sets: 3,
     reps: 10,
+  },
+  "wrist curls (reverse)": {
+    name: "wrist curls (reverse)",
+    type: "anaerobic",
+    weight: 10,
+    sets: 3,
+    reps: 10,
   }
 };
 
