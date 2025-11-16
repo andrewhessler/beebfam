@@ -38,6 +38,14 @@
         <button class="hw" onclick="toggleLivingRoom(false)">Living Room Off</button>
       </div>
       <div class="light-control-group">
+        <button class="hw" onclick="toggleSmall(true)">Small On</button>
+        <button class="hw" onclick="toggleSmall(false)">Small Off</button>
+      </div>
+      <div class="light-control-group">
+        <button class="hw" onclick="toggleTall(true)">Tall On</button>
+        <button class="hw" onclick="toggleTall(false)">Tall Off</button>
+      </div>
+      <div class="light-control-group">
         <button class="hw" onclick="toggleBedroom(true)">Bedroom On</button>
         <button class="hw" onclick="toggleBedroom(false)">Bedroom Off</button>
       </div>
@@ -109,6 +117,38 @@
               name: "tall living room",
               toggle: onOff,
             },
+            {
+              name: "small living room",
+              toggle: onOff,
+            },
+          ]
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    }
+    const toggleTall = async (onOff) => {
+      const response = await fetch('/light-control', {
+        method: "POST",
+        body: JSON.stringify({
+          requests: [
+            {
+              name: "tall living room",
+              toggle: onOff,
+            },
+          ]
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    }
+    const toggleSmall = async (onOff) => {
+      const response = await fetch('/light-control', {
+        method: "POST",
+        body: JSON.stringify({
+          requests: [
             {
               name: "small living room",
               toggle: onOff,
