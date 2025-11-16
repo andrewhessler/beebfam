@@ -15,18 +15,40 @@
 
 #locations {
   display: flex;
-  flex-direction: column;
-  row-gap: 20px;
+  column-gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
   width: 100%;
   max-width: 600px;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: max-content;
+}
+
+.app-label {
+  word-wrap: break-word;
+  font-size: 0.7em;
+  max-width: 50px;
+  padding-top: 5px;
 }
 
 #login-block {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   row-gap: 20px;
   max-width: 600px;
   width: 100%;
+}
+
+#login-button {
+  max-width: 100px;
 }
 
 #password {
@@ -36,13 +58,38 @@
 #light-control {
   display: flex;
   flex-direction: column;
+  align-items: center;
   row-gap: 20px;
   max-width: 600px;
 }
 
+.app-button-container {
+  width: 180px;
+  height: 180px;
+  max-width: 180px;
+  max-height: 180px;
+}
+
+.granular-light-control {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: 50px;
+  row-gap: 50px;
+}
+
 .light-control-group {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
+}
+
+.light-control-label {
+  padding-top: 5px;
+}
+
+.light-switch {
+  width: 65px;
 }
 
 .fw {

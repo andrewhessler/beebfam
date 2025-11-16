@@ -1,57 +1,81 @@
 <head>
   <meta content="width=device-width, initial-scale=1" name="viewport" />
-  <link rel="stylesheet" href="/assets/index.css" />
+  <link rel="stylesheet" href="./assets/index.css" />
   <title>Beebfam Hub</title>
 </head>
 
 <body>
   <div id="root">
     <div id="locations">
-      <div class="fw">
-        <a href="https://ainbox.beebfam.org"><button class="fw">Andrew Inbox</button></a>
+      <div class="app-container">
+        <a href="https://ainbox.beebfam.org"><button class="app">A</button></a>
+        <div class="app-label">Andrew Inbox</div>
       </div>
-      <div class="fw">
-        <a href="https://chores.beebfam.org"><button class="fw">Chores</button></a>
+      <div class="app-container">
+        <a href="https://chores.beebfam.org"><button class="app">C</button></a>
+        <div class="app-label">Chores</div>
       </div>
-      <div class="fw">
-        <a href="https://exercise.beebfam.org"><button class="fw">Exercise</button></a>
+      <div class="app-container">
+        <a href="https://exercise.beebfam.org"><button class="app">E</button></a>
+        <div class="app-label">Exercise</div>
       </div>
-      <div class="fw">
-        <a href="https://mario.beebfam.org"><button class="fw">Mario</button></a>
+      <div class="app-container">
+        <a href="https://mario.beebfam.org"><button class="app">M</button></a>
+        <div class="app-label">Mario</div>
       </div>
-      <div class="fw">
-        <a href="https://media.beebfam.org"><button class="fw">Media</button></a>
+      <div class="app-container">
+        <a href="https://media.beebfam.org"><button class="app">M</button></a>
+        <div class="app-label">Media</div>
       </div>
-      <div class="fw">
-        <a href="https://supply.beebfam.org"><button class="fw">Shopping</button></a>
+      <div class="app-container">
+        <a href="https://supply.beebfam.org"><button class="app">S</button></a>
+        <div class="app-label">Shopping</div>
       </div>
     </div>
 
     <div id="login-block">
-      <input type="text" id="password" onfocus="this.value = this.value === 'Login needed' ? '' : this.value" /> <button onclick="login()">Login</button>
+      <input type="text" id="password" onfocus="this.value = this.value === 'Login needed' ? '' : this.value" /> 
+      <button id="login-button" onclick="login()">Login</button>
     </div>
 
     <div id="light-control" class="fw">
-      <button class="fw" onclick="turnOffLights()">Lights Off</button>
-      <div class="light-control-group">
-        <button class="hw" onclick="toggleLivingRoom(true)">Living Room On</button>
-        <button class="hw" onclick="toggleLivingRoom(false)">Living Room Off</button>
-      </div>
-      <div class="light-control-group">
-        <button class="hw" onclick="toggleSmall(true)">Small On</button>
-        <button class="hw" onclick="toggleSmall(false)">Small Off</button>
-      </div>
-      <div class="light-control-group">
-        <button class="hw" onclick="toggleTall(true)">Tall On</button>
-        <button class="hw" onclick="toggleTall(false)">Tall Off</button>
-      </div>
-      <div class="light-control-group">
-        <button class="hw" onclick="toggleBedroom(true)">Bedroom On</button>
-        <button class="hw" onclick="toggleBedroom(false)">Bedroom Off</button>
-      </div>
-      <div class="light-control-group">
-        <button class="hw" onclick="toggleStudio(true)">Studio On</button>
-        <button class="hw" onclick="toggleStudio(false)">Studio Off</button>
+      <button class="hw" onclick="turnOffLights()">Lights Off</button>
+      <div class="granular-light-control">
+        <div class="light-control-group">
+          <div class="on-off-container">
+            <button class="light-switch" onclick="toggleLights(['small living room'], false)">Off</button>
+            <button class="light-switch" onclick="toggleLights(['small living room'] ,true)">On</button>
+          </div>
+          <div class="light-control-label">Small Lamp</div>
+        </div>
+        <div class="light-control-group">
+          <div class="on-off-container">
+            <button class="light-switch" onclick="toggleLights(['tall living room'], false)">Off</button>
+            <button class="light-switch" onclick="toggleLights(['tall living room'], true)">On</button>
+          </div>
+          <div class="light-control-label">Tall Lamp</div>
+        </div>
+        <div class="light-control-group">
+          <div class="on-off-container">
+            <button class="light-switch" onclick="toggleLights(['small living room', 'tall living room'], false)">Off</button>
+            <button class="light-switch" onclick="toggleLights(['small living room', 'tall living room'], true)">On</button>
+          </div>
+          <div class="light-control-label">Living Room</div>
+        </div>
+        <div class="light-control-group">
+          <div class="on-off-container">
+            <button class="light-switch" onclick="toggleLights(['bedroom black'], false)">Off</button>
+            <button class="light-switch" onclick="toggleLights(['bedroom black'], true)">On</button>
+          </div>
+          <div class="light-control-label">Bedroom</div>
+        </div>
+        <div class="light-control-group">
+          <div class="on-off-container">
+            <button class="light-switch" onclick="toggleLights(['studio lights'], false)">Off</button>
+            <button class="light-switch" onclick="toggleLights(['studio lights'], true)">On</button>
+          </div>
+          <div class="light-control-label">Studio</div>
+        </div>
       </div>
     </div>
   </div>
@@ -76,126 +100,28 @@
       }
     }
     login()
-    const turnOffLights = async () => {
+    const toggleLights = async (lightArray, onOff) => {
       const response = await fetch('/light-control', {
         method: "POST",
         body: JSON.stringify({
-          requests: [
-            {
-              name: "tall living room",
-              toggle: false,
-            },
-            {
-              name: "small living room",
-              toggle: false,
-            },
-            {
-              name: "bubble lamp",
-              toggle: false,
-            },
-            {
-              name: "bedroom black",
-              toggle: false,
-            },
-            {
-              name: "studio lights",
-              toggle: false,
-            },
-          ]
+          requests: lightArray.map((light) => ({
+            name: light,
+            toggle: onOff,
+          }))
         }),
         headers: {
           "Content-Type": "application/json"
         }
       })
     }
-    const toggleLivingRoom = async (onOff) => {
-      const response = await fetch('/light-control', {
-        method: "POST",
-        body: JSON.stringify({
-          requests: [
-            {
-              name: "tall living room",
-              toggle: onOff,
-            },
-            {
-              name: "small living room",
-              toggle: onOff,
-            },
-          ]
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-    }
-    const toggleTall = async (onOff) => {
-      const response = await fetch('/light-control', {
-        method: "POST",
-        body: JSON.stringify({
-          requests: [
-            {
-              name: "tall living room",
-              toggle: onOff,
-            },
-          ]
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-    }
-    const toggleSmall = async (onOff) => {
-      const response = await fetch('/light-control', {
-        method: "POST",
-        body: JSON.stringify({
-          requests: [
-            {
-              name: "small living room",
-              toggle: onOff,
-            },
-          ]
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-    }
-    const toggleBedroom = async (onOff) => {
-      const response = await fetch('/light-control', {
-        method: "POST",
-        body: JSON.stringify({
-          requests: [
-            {
-              name: "bedroom black",
-              toggle: onOff,
-            },
-          ]
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-    }
-    const toggleStudio = async (onOff) => {
-      const response = await fetch('/light-control', {
-        method: "POST",
-        body: JSON.stringify({
-          requests: [
-            // {
-            //   name: "bubble lamp",
-            //   toggle: true,
-            // },
-            {
-              name: "studio lights",
-              toggle: onOff,
-            },
-          ]
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-    }
+
+    const turnOffLights = async () => { toggleLights([
+      'small living room',
+      'tall living room',
+      'bubble lamp',
+      'bedroom black',
+      'studio lights'
+    ], false)}
   </script>
 </body>
 
