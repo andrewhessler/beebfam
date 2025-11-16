@@ -125,9 +125,11 @@ async fn light_control_handler(
         .build()
         .unwrap();
 
+    let mut futs = vec![];
+
     for req in req.requests {
         if let Some(device) = get_device(&req.name) {
-            client
+            let future = client
                 .post("https://openapi.api.govee.com/router/api/v1/device/control")
                 .json(&json!({
                     "requestId": "uuid",
@@ -141,11 +143,12 @@ async fn light_control_handler(
                        }
                     }
                 }))
-                .send()
-                .await
-                .unwrap();
+                .send();
+            futs.push(future);
         }
     }
+
+    futures_util::future::join_all(futs).await;
     Ok(())
 }
 
