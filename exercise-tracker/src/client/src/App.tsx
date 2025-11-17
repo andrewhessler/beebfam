@@ -98,7 +98,13 @@ function App() {
       const response = await fetch(`/add-item`, {
         method: "POST",
         body: JSON.stringify({
-          ...exercise
+          name: exercise.name,
+          type: exercise.type,
+          duration_min: exercise.duration_min ? parseFloat(exercise.duration_min as string) : undefined,
+          distance: exercise.distance ? parseFloat(exercise.distance as string) : undefined,
+          weight: exercise.weight ? parseFloat(exercise.weight as string) : undefined,
+          sets: exercise.sets ? parseInt(exercise.sets as string) : undefined,
+          reps: exercise.reps ? parseInt(exercise.reps as string) : undefined,
         }),
         headers: {
           "Content-Type": "application/json"
