@@ -16,11 +16,11 @@ type ExerciseType = "anaerobic" | "aerobic";
 type Exercise = {
   name: string,
   type: ExerciseType,
-  duration_min?: number,
-  distance?: number,
-  weight?: number,
-  sets?: number,
-  reps?: number,
+  duration_min?: number | string,
+  distance?: number | string,
+  weight?: number | string,
+  sets?: number | string,
+  reps?: number | string,
 }
 
 const EXERCISES: Record<string, Exercise> = {
@@ -126,12 +126,12 @@ function App() {
             (<>
               <div>
                 Duration: <input type="text" onKeyDown={addItem}
-                  onChange={(event) => setExercise({ ...exercise, duration_min: parseFloat(event.target.value) })}
+                  onChange={(event) => setExercise({ ...exercise, duration_min: event.target.value })}
                   value={exercise.duration_min || ''}></input>
               </div>
               <div>
                 Distance: <input type="text" onKeyDown={addItem}
-                  onChange={(event) => setExercise({ ...exercise, distance: parseFloat(event.target.value) })}
+                  onChange={(event) => setExercise({ ...exercise, distance: event.target.value })}
                   value={exercise.distance || ''}></input>
               </div>
             </>)
@@ -139,17 +139,17 @@ function App() {
             (<>
               <div>
                 Weight: <input type="text" onKeyDown={addItem}
-                  onChange={(event) => setExercise({ ...exercise, weight: parseFloat(event.target.value) })}
+                  onChange={(event) => setExercise({ ...exercise, weight: event.target.value })}
                   value={exercise.weight || ''}></input>
               </div>
               <div>
                 Sets: <input type="text" onKeyDown={addItem}
-                  onChange={(event) => setExercise({ ...exercise, sets: parseInt(event.target.value) })}
+                  onChange={(event) => setExercise({ ...exercise, sets: event.target.value })}
                   value={exercise.sets || ''}></input>
               </div>
               <div>
                 Reps: <input type="text" onKeyDown={addItem}
-                  onChange={(event) => setExercise({ ...exercise, reps: parseInt(event.target.value) })}
+                  onChange={(event) => setExercise({ ...exercise, reps: event.target.value })}
                   value={exercise.reps || ''}></input>
               </div>
             </>)
