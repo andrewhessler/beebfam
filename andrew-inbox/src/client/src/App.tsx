@@ -71,7 +71,7 @@ function App() {
         {items.sort((a, b) => b.created_at - a.created_at).map((item) =>
           <button className="item" onClick={() => deleteItem(item)}>
             <div className="item-card">
-              <div className="item-name">{(new Date(item.created_at)).toDateString()} - {item.name}</div>
+              <div className="item-name">{(new Date(item.created_at * 1000)).toDateString()} - {item.name}</div>
             </div>
           </button>
         )}
