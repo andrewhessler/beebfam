@@ -24,4 +24,4 @@ jobs:
           USER: ${{ secrets.LINODE_USER }}
           HOST: ${{ secrets.LINODE_HOST }}
         run: |
-          ssh -i $SSH_KEY_PATH $USER@$HOST ~/beebfam/build-and-deploy-all.sh
+          ssh -T -i $SSH_KEY_PATH $USER@$HOST
