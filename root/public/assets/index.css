@@ -36,7 +36,7 @@
   word-wrap: break-word;
   font-size: 0.7em;
   max-width: 55px;
-  padding-top: 5px;
+  padding-top: 10px;
 }
 
 .app-icon {
@@ -45,7 +45,7 @@
   text-align: center;
   font-size: 0.8em;
   font-weight: bold;
-  transform: scale(1.1);
+  transform: scale(1.3);
 }
 
 #login-block {
