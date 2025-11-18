@@ -24,4 +24,4 @@ jobs:
           USER: ${{ secrets.LINODE_USER }}
           HOST: ${{ secrets.LINODE_HOST }}
         run: |
-          ssh -t -i ~/.ssh/private.key $USER@$HOST "~/beebfam/build-and-deploy-all.sh"
+          ssh -t -i ~/.ssh/private.key $USER@$HOST "cargo --version"
