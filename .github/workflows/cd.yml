@@ -24,4 +24,4 @@ jobs:
           USER: ${{ secrets.LINODE_USER }}
           HOST: ${{ secrets.LINODE_HOST }}
         run: |
-          ssh -i ~/.ssh/private.key $USER@$HOST "source ~/.cargo/env && source ~/.nvm/nvm.sh && ~/beebfam/build-and-deploy-all.sh"
+          ssh -i ~/.ssh/private.key $USER@$HOST "source ~/.cargo/env && source ~/.nvm/nvm.sh && nvm use 24 && ~/beebfam/build-and-deploy-all.sh"
