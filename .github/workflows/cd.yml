@@ -13,16 +13,15 @@ jobs:
         shell: bash
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ../private.key
-          sudo chmod 600 ../private.key
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/private.key
+          sudo chmod 600 ~/.ssh/private.key
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         env:
           SSH_PRIVATE_KEY: ${{secrets.CD_KEY}}
           SSH_KNOWN_HOSTS: ${{secrets.CD_KNOWN_HOSTS}}
-          SSH_KEY_PATH: ${{ github.workspace }}/../private.key
       - name: Deploy
         env:
           USER: ${{ secrets.LINODE_USER }}
           HOST: ${{ secrets.LINODE_HOST }}
         run: |
-          ssh -T -i $SSH_KEY_PATH $USER@$HOST
+          ssh -T -i ~/.ssh/private.key $USER@$HOST
