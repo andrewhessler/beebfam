@@ -69,8 +69,6 @@ async fn login_handler(
 ) -> Result<CookieJar, AppError> {
     let pw_path = std::env::var("PASSWORD_PATH")?;
     let pw = fs::read_to_string(pw_path)?;
-    let salt = std::env::var("SALT")?;
-    let salt_bytes: [u8; 16] = salt.into_bytes().try_into().unwrap();
     let key_path = std::env::var("KEY_PATH")?;
     let key = fs::read_to_string(key_path)?;
 
@@ -81,9 +79,7 @@ async fn login_handler(
         return Ok(cookies);
     }
 
-    let input_hashed = bcrypt::bcrypt(12, salt_bytes, req.password.trim().as_bytes());
-
-    let updated_cookies = if input_hashed == pw.as_bytes() {
+    let updated_cookies = if bcrypt::verify(req.password, &pw).is_ok_and(|is_true| is_true) {
         cookies.add(
             Cookie::build((COOKIE_NAME, key.trim().to_string()))
                 .path("/")
