@@ -79,7 +79,11 @@ async fn login_handler(
         return Ok(cookies);
     }
 
-    let updated_cookies = if bcrypt::verify(req.password, &pw).is_ok_and(|is_true| is_true) {
+    println!("{} - {pw}", req.password);
+    let result = bcrypt::verify(req.password, &pw);
+    println!("{result:?}");
+
+    let updated_cookies = if result.is_ok_and(|is_true| is_true) {
         cookies.add(
             Cookie::build((COOKIE_NAME, key.trim().to_string()))
                 .path("/")
