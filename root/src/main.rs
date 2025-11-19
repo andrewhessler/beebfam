@@ -79,9 +79,7 @@ async fn login_handler(
         return Ok(cookies);
     }
 
-    println!("{} - {pw}", req.password);
-    let result = bcrypt::verify(req.password, &pw);
-    println!("{result:?}");
+    let result = bcrypt::verify(req.password, pw.trim());
 
     let updated_cookies = if result.is_ok_and(|is_true| is_true) {
         cookies.add(
