@@ -166,7 +166,7 @@ function App() {
             const { dateGroups, sortedKeys } = dateGroupedHistory();
             return sortedKeys.map((dateKey) => (
               <div className="date-group">
-                <h3>{dateKey}</h3>
+                <h3 className="date-header">{dateKey}</h3>
                 {dateGroups[dateKey].map((item) => (
                   item.weight ?
                     <div className="exercise-item">
