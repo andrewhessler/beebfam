@@ -25,8 +25,8 @@ function App() {
     <>
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div className='rounds'>
-        Rounds: <select onChange={(value) => setNumOfRounds(parseInt(value.currentTarget.value))}>
-          {[3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+        Rounds: <select onChange={(value) => setNumOfRounds(parseInt(value.currentTarget.value))} value={4}>
+          {[3, 4, 5, 6, 8, 12, 16, 32].map((i) => (
             <option key={i} value={i}>{i}</option>
           ))}
         </select>
