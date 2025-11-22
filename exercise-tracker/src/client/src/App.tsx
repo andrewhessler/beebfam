@@ -62,7 +62,7 @@ function App() {
 
     exerciseHistory.forEach((item) => {
       const date = new Date(item.date * 1000);
-      const dateKey = date.toISOString().split('T')[0];
+      const dateKey = date.toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
 
       if (!dateGroups[dateKey]) {
         dateGroups[dateKey] = [];

@@ -10,11 +10,12 @@ const ALL_OPTIONS = [
 
 
 const calcResults = () => ALL_OPTIONS[Math.floor(Math.random() * ALL_OPTIONS.length)];
+const DEFAULT_ROUND_NUM = 4;
 
 
 function App() {
-  const [numOfRounds, setNumOfRounds] = useState<number>(4);
-  const [roundResults, setRoundResults] = useState<string[]>(Array.from({ length: 4 }, calcResults));
+  const [numOfRounds, setNumOfRounds] = useState<number>(DEFAULT_ROUND_NUM);
+  const [roundResults, setRoundResults] = useState<string[]>(Array.from({ length: DEFAULT_ROUND_NUM }, calcResults));
 
   const randomizeResults = useCallback(() => {
     const payload = Array.from({ length: numOfRounds }, calcResults);
@@ -25,7 +26,7 @@ function App() {
     <>
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div className='rounds'>
-        Rounds: <select onChange={(value) => setNumOfRounds(parseInt(value.currentTarget.value))} value={4}>
+        Rounds: <select onChange={(value) => setNumOfRounds(parseInt(value.currentTarget.value))} defaultValue={DEFAULT_ROUND_NUM}>
           {[3, 4, 5, 6, 8, 12, 16, 32].map((i) => (
             <option key={i} value={i}>{i}</option>
           ))}
