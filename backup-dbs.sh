@@ -17,7 +17,7 @@ for dir in "$script_dir"/*/; do
         
         if [ -n "$db" ] && [ -n "$service" ]; then
             source_db="/var/lib/$service/$db"
-            backup_file="$backup_dir/${service}_$(date +%Y%m%d_%H%M%S).db"
+            backup_file="$backup_dir/$(date +%Y%m%d_%H%M%S)_${service}.db"
             
             if [ -f "$source_db" ]; then
                 echo "Backing up $service..."
