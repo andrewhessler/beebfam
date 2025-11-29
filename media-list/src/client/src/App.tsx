@@ -20,6 +20,7 @@ function App() {
   const [newItem, setNewItem] = useState<string | null>();
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [filter, setFilter] = useState<string>("all");
+  const [showAndrew, setShowAndrew] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -86,6 +87,7 @@ function App() {
             )}
           </select>
           <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+          Show Andrew: <input type="checkbox" checked={showAndrew} onChange={(event) => setShowAndrew(event.currentTarget.checked)} />
         </div>
         <div id="filter">
           <label>filter: </label>
@@ -100,7 +102,7 @@ function App() {
           .map((cat) => (
             <div className="category">
               <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-              {items.filter((item) => item.category === cat)
+              {items.filter((item) => item.category === cat && (showAndrew || !item.name.toLowerCase().includes("(andrew)")))
                 .sort((a, b) => a.created_at - b.created_at)
                 .map((item) => (
                   <button className="item" onClick={() => deleteItem(item)}>
