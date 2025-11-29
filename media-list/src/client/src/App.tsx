@@ -87,7 +87,10 @@ function App() {
             )}
           </select>
           <input type="text" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
-          Show Andrew: <input type="checkbox" checked={showAndrew} onChange={(event) => setShowAndrew(event.currentTarget.checked)} />
+        </div>
+        <div id="andrew-filter">
+          <label>Show Andrew: </label>
+          <input type="checkbox" checked={showAndrew} onChange={(event) => setShowAndrew(event.currentTarget.checked)} />
         </div>
         <div id="filter">
           <label>filter: </label>
