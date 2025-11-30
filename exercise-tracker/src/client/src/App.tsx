@@ -31,9 +31,8 @@ const EXERCISES: Record<string, Exercise> = {
     distance: 9,
   },
   "forearm stretch": {
-    name: "biking",
+    name: "forearm stretch",
     type: "aerobic",
-    duration_min: 12,
   },
   "hand grippers": {
     name: "hand grippers",
