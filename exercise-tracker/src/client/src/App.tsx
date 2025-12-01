@@ -178,7 +178,7 @@ function App() {
                     </div>
                     :
                     <div className="exercise-item">
-                      {item.name} dist: {item.distance} dur: {item.duration_min}
+                      {item.name} {item.distance ? `dist: ${item.distance}` : ''} {item.duration_min ? `dur: ${item.duration_min}` : ''}
                     </div>
                 ))}
               </div>
