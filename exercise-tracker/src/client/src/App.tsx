@@ -44,14 +44,14 @@ const EXERCISES: Record<string, Exercise> = {
   "wrist curls": {
     name: "wrist curls",
     type: "anaerobic",
-    weight: 10,
+    weight: 3,
     sets: 3,
     reps: 10,
   },
   "wrist curls (reverse)": {
     name: "wrist curls (reverse)",
     type: "anaerobic",
-    weight: 10,
+    weight: 3,
     sets: 3,
     reps: 10,
   }
