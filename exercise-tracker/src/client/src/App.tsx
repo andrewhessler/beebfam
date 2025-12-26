@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
+import { EXERCISES, type Exercise } from './exercises';
 
 type Item = {
   name: string,
@@ -11,51 +12,6 @@ type Item = {
   date: number,
 }
 
-type ExerciseType = "anaerobic" | "aerobic";
-
-type Exercise = {
-  name: string,
-  type: ExerciseType,
-  duration_min?: number | string,
-  distance?: number | string,
-  weight?: number | string,
-  sets?: number | string,
-  reps?: number | string,
-}
-
-const EXERCISES: Record<string, Exercise> = {
-  "biking": {
-    name: "biking",
-    type: "aerobic",
-    duration_min: 25,
-    distance: 9,
-  },
-  "forearm stretch": {
-    name: "forearm stretch",
-    type: "aerobic",
-  },
-  "hand grippers": {
-    name: "hand grippers",
-    type: "anaerobic",
-    weight: 20,
-    sets: 3,
-    reps: 10,
-  },
-  "wrist curls": {
-    name: "wrist curls",
-    type: "anaerobic",
-    weight: 3,
-    sets: 3,
-    reps: 10,
-  },
-  "wrist curls (reverse)": {
-    name: "wrist curls (reverse)",
-    type: "anaerobic",
-    weight: 3,
-    sets: 3,
-    reps: 10,
-  }
-};
 
 function App() {
   const [exercise, setExercise] = useState<Exercise>(EXERCISES["biking"]);
