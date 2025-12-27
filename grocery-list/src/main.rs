@@ -18,6 +18,7 @@ struct Item {
     active: bool,
     qty: Option<String>,
     category: Option<String>,
+    store: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Default, Debug)]
@@ -86,6 +87,7 @@ struct AddItemRequest {
     name: String,
     qty: Option<String>,
     category: String,
+    store: String,
 }
 
 #[derive(Deserialize)]
@@ -128,11 +130,12 @@ async fn add_item_handler(
     } else {
         sqlx::query!(
             r"
-            INSERT INTO items VALUES (?1, 1, ?2, ?3) 
+            INSERT INTO items VALUES (?1, 1, ?2, ?3, ?4) 
             ",
             req.name,
             req.qty,
-            req.category
+            req.category,
+            req.store
         )
         .execute(&state.pool)
         .await?;

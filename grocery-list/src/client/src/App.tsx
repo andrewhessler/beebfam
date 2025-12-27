@@ -6,6 +6,7 @@ type Item = {
   active: boolean,
   category: string,
   qty: string,
+  store: string,
 }
 
 const CATEGORIES = [
@@ -24,6 +25,26 @@ const CATEGORIES = [
   "misc"
 ];
 
+const STORES = [
+  "hyvee",
+  "target",
+  "ulta",
+  "amazon",
+  "wawak",
+  "other"
+];
+
+const CATEGORY_STORE_COMBOS: { store: string, category: string }[] = [];
+
+for (const store of STORES) {
+  for (const category of CATEGORIES) {
+    CATEGORY_STORE_COMBOS.push({
+      store,
+      category,
+    })
+  }
+}
+
 function App() {
   const [items, setItems] = useState<Item[]>([]);
 
@@ -34,7 +55,9 @@ function App() {
   const [newItem, setNewItem] = useState<string | null>();
   const [qty, setQty] = useState<string | null>(null);
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
-  const [filter, setFilter] = useState<string>("all");
+  const [store, setStore] = useState<string>(STORES[0]);
+  const [catFilter, setCatFilter] = useState<string>("all");
+  const [storeFilter, setStoreFilter] = useState<string>("all");
 
 
   useEffect(() => {
@@ -72,12 +95,14 @@ function App() {
     if (event.key === "Enter") {
       event.preventDefault();
       const matchedCategory = items.find((item) => item.name == newItem)?.category;
+      const matchedStore = items.find((item) => item.store == newItem)?.store;
       const response = await fetch(`/add-item`, {
         method: "POST",
         body: JSON.stringify({
           name: newItem,
           qty,
           category: matchedCategory || category,
+          store: matchedStore || store,
         }),
         headers: {
           "Content-Type": "application/json"
@@ -91,7 +116,7 @@ function App() {
       setNewItem("");
       setQty(null);
     }
-  }, [newItem, qty, category, items])
+  }, [newItem, qty, category, store, items])
 
   const toggleItem = useCallback(async (item: Item) => {
     const response = await fetch(`/toggle-item`, {
@@ -120,6 +145,11 @@ function App() {
               <option value={cat}>{cat}</option>
             )}
           </select>
+          <select id="input-select" onChange={(event) => setStore(event.target.value)}>
+            {STORES.map((store) =>
+              <option value={store}>{store}</option>
+            )}
+          </select>
           <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
           <datalist id="existing-names">
             {
@@ -131,35 +161,44 @@ function App() {
           <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
         </div>
         <div id="filter">
-          <label>filter: </label>
-          <select onChange={(event) => setFilter(event.target.value)}>
+          <label>filter category: </label>
+          <select onChange={(event) => setCatFilter(event.target.value)}>
             <option value="all">all</option>
             {CATEGORIES.map((cat) =>
               <option value={cat}>{cat}</option>
             )}
           </select>
+
+          <label>filter store: </label>
+          <select onChange={(event) => setStoreFilter(event.target.value)}>
+            <option value="all">all</option>
+            {STORES.map((store) =>
+              <option value={store}>{store}</option>
+            )}
+          </select>
         </div>
-        {CATEGORIES.filter((cat) => cat === filter || filter === "all" && items.some((item) => item.category === cat && item.active)).map((cat) => (
-          <div className="category">
-            <h3 className="category-header">{cat?.length ? cat : "misc"}</h3>
-            {items?.filter((item) => item.active && item.category === cat)
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((item) => (
-                <button className="item" onClick={() => toggleItem(item)}>
-                  <div className="item-card">
-                    <div className="item-name">{item.name}</div>
-                    <div className='item-qty'>{item.qty}</div>
-                    <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
-                  </div>
-                </button>
-              ))}
-          </div>)
-        )}
+        {CATEGORY_STORE_COMBOS.filter((combo) => (combo.category === catFilter || combo.store === storeFilter) || catFilter === "all" // show header if filtering specifically or if showing all and some items exist
+          && storeFilter === "all" && items.some((item) => item.category === combo.category && item.store === combo.store && item.active)).map((combo) => (
+            <div className="category">
+              <h3 className="category-header">{combo?.category?.length ? combo.category : "misc"} - {combo.store}</h3>
+              {items?.filter((item) => item.active && item.category === combo.category && item.store === combo.store)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((item) => (
+                  <button className="item" onClick={() => toggleItem(item)}>
+                    <div className="item-card">
+                      <div className="item-name">{item.name}</div>
+                      <div className='item-qty'>{item.qty}</div>
+                      <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
+                    </div>
+                  </button>
+                ))}
+            </div>)
+          )}
         <h2>Inactive Items</h2>
-        {CATEGORIES.filter((cat) => cat === filter || filter === "all").map((cat) => (
+        {CATEGORY_STORE_COMBOS.filter((combo) => combo.category === catFilter || catFilter === "all").map((combo) => (
           <div className="category">
-            <h3>{cat?.length ? cat : "misc"}</h3>
-            {items?.filter((item) => !item.active && item.category === cat)
+            <h3>{combo?.category.length ? combo.category : "misc"} - {combo.store}</h3>
+            {items?.filter((item) => !item.active && item.category === combo.category && item.store === combo.store)
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((item) => (
                 <button className="item" onClick={() => toggleItem(item)}>
