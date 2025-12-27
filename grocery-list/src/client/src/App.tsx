@@ -177,7 +177,7 @@ function App() {
             )}
           </select>
         </div>
-        {CATEGORY_STORE_COMBOS.filter((combo) => ((combo.category === catFilter || catFilter === "all") && (combo.store === storeFilter || storeFilter === "all"))
+        {CATEGORY_STORE_COMBOS.filter((combo) => (combo.category === catFilter || catFilter === "all") && (combo.store === storeFilter || storeFilter === "all")
           && items.some((item) => item.category === combo.category && item.store === combo.store && item.active)).map((combo) => (
             <div className="category">
               <h3 className="category-header">{combo?.category?.length ? combo.category : "misc"} - {combo.store}</h3>
@@ -195,7 +195,9 @@ function App() {
             </div>)
           )}
         <h2>Inactive Items</h2>
-        {CATEGORY_STORE_COMBOS.filter((combo) => (combo.category === catFilter || catFilter === "all") && (combo.store === storeFilter || storeFilter === "all"))
+        {CATEGORY_STORE_COMBOS.filter((combo) => (combo.category === catFilter || catFilter === "all") && (combo.store === storeFilter || storeFilter === "all")
+          && items.some((item) => item.category === combo.category && item.store === combo.store)
+        )
           .map((combo) => (
             <div className="category">
               <h3>{combo?.category.length ? combo.category : "misc"} - {combo.store}</h3>
