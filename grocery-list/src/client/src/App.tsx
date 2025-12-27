@@ -47,10 +47,24 @@ for (const store of STORES) {
 }
 
 function App() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([{
+    category: "household",
+    store: "home depot",
+    name: "wire snips",
+    qty: "",
+    active: true
+  }]);
 
   // For some reason when we add new items to the datalist it opens, so this is in separate state and not updated after first fetch
-  const [itemsForSelect, setItemsForSelect] = useState<Item[]>([]);
+  const [itemsForSelect, setItemsForSelect] = useState<Item[]>([
+    {
+      category: "household",
+      store: "home depot",
+      name: "wire snips",
+      qty: "",
+      active: true
+    }
+  ]);
 
   const newItemRef = useRef(null);
   const [newItem, setNewItem] = useState<string | null>();
@@ -115,7 +129,7 @@ function App() {
       setNewItem("");
       setQty(null);
     }
-  }, [newItem, qty, category, store, items])
+  }, [newItem, qty, category, store])
 
   const toggleItem = useCallback(async (item: Item) => {
     const response = await fetch(`/toggle-item`, {
@@ -139,19 +153,19 @@ function App() {
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
         <div id="input">
-          <select id="input-select" onChange={(event) => setCategory(event.target.value)}>
+          <select id="input-select" onChange={(event) => setCategory(event.target.value)} value={category}>
             {CATEGORIES.map((cat) =>
               <option value={cat}>{cat}</option>
             )}
           </select>
-          <select id="input-select" onChange={(event) => setStore(event.target.value)}>
+          <select id="input-select" onChange={(event) => setStore(event.target.value)} value={store}>
             {STORES.map((store) =>
               <option value={store}>{store}</option>
             )}
           </select>
           <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => {
             setNewItem(event.target.value);
-            const existingValue = items.find((item) => item.name = event.target.value);
+            const existingValue = items.find((item) => item.name === event.target.value);
             if (existingValue) {
               setCategory(existingValue.category);
               setStore(existingValue.store);
