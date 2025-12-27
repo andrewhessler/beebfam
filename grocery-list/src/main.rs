@@ -118,11 +118,12 @@ async fn add_item_handler(
     if let Some(item) = item {
         sqlx::query!(
             r"
-            UPDATE items SET active = ?1, qty = ?2, category = ?3 WHERE name = ?4
+            UPDATE items SET active = ?1, qty = ?2, category = ?3, store = ?4 WHERE name = ?5
             ",
             true,
             req.qty,
             req.category,
+            req.store,
             item.name,
         )
         .execute(&state.pool)
