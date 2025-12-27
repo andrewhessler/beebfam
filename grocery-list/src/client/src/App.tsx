@@ -177,8 +177,8 @@ function App() {
             )}
           </select>
         </div>
-        {CATEGORY_STORE_COMBOS.filter((combo) => (combo.category === catFilter || combo.store === storeFilter) || catFilter === "all" // show header if filtering specifically or if showing all and some items exist
-          && storeFilter === "all" && items.some((item) => item.category === combo.category && item.store === combo.store && item.active)).map((combo) => (
+        {CATEGORY_STORE_COMBOS.filter((combo) => ((combo.category === catFilter || catFilter === "all") || (combo.store === storeFilter || storeFilter === "all"))
+          && items.some((item) => item.category === combo.category && item.store === combo.store && item.active)).map((combo) => (
             <div className="category">
               <h3 className="category-header">{combo?.category?.length ? combo.category : "misc"} - {combo.store}</h3>
               {items?.filter((item) => item.active && item.category === combo.category && item.store === combo.store)
