@@ -195,22 +195,23 @@ function App() {
             </div>)
           )}
         <h2>Inactive Items</h2>
-        {CATEGORY_STORE_COMBOS.filter((combo) => combo.category === catFilter || catFilter === "all").map((combo) => (
-          <div className="category">
-            <h3>{combo?.category.length ? combo.category : "misc"} - {combo.store}</h3>
-            {items?.filter((item) => !item.active && item.category === combo.category && item.store === combo.store)
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((item) => (
-                <button className="item" onClick={() => toggleItem(item)}>
-                  <div className="item-card">
-                    <div className="item-name">{item.name}</div>
-                    <div className='item-qty'>{item.qty}</div>
-                    <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
-                  </div>
-                </button>
-              ))}
-          </div>)
-        )}
+        {CATEGORY_STORE_COMBOS.filter((combo) => (combo.category === catFilter || catFilter === "all") && (combo.store === storeFilter || storeFilter === "all"))
+          .map((combo) => (
+            <div className="category">
+              <h3>{combo?.category.length ? combo.category : "misc"} - {combo.store}</h3>
+              {items?.filter((item) => !item.active && item.category === combo.category && item.store === combo.store)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((item) => (
+                  <button className="item" onClick={() => toggleItem(item)}>
+                    <div className="item-card">
+                      <div className="item-name">{item.name}</div>
+                      <div className='item-qty'>{item.qty}</div>
+                      <button className="delete-item" onClick={(event) => deleteItem(item, event)}>X</button>
+                    </div>
+                  </button>
+                ))}
+            </div>)
+          )}
       </div>
     </>
   )
