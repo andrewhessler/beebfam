@@ -95,15 +95,13 @@ function App() {
   const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      const matchedCategory = items.find((item) => item.name == newItem)?.category;
-      const matchedStore = items.find((item) => item.store == newItem)?.store;
       const response = await fetch(`/add-item`, {
         method: "POST",
         body: JSON.stringify({
           name: newItem,
           qty,
-          category: matchedCategory || category,
-          store: matchedStore || store,
+          category: category,
+          store: store,
         }),
         headers: {
           "Content-Type": "application/json"
@@ -151,7 +149,14 @@ function App() {
               <option value={store}>{store}</option>
             )}
           </select>
-          <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+          <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => {
+            setNewItem(event.target.value);
+            const existingValue = items.find((item) => item.name = event.target.value);
+            if (existingValue) {
+              setCategory(existingValue.category);
+              setStore(existingValue.store);
+            }
+          }} />
           <datalist id="existing-names">
             {
               itemsForSelect?.map((item) =>
