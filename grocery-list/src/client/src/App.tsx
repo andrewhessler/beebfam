@@ -162,21 +162,24 @@ function App() {
           <input type="text" value={qty ? qty : ""} placeholder='qty' onKeyDown={addItem} onChange={(event) => setQty(event.target.value)} />
         </div>
         <div id="filter">
-          <label>filter category: </label>
-          <select onChange={(event) => setCatFilter(event.target.value)}>
-            <option value="all">all</option>
-            {CATEGORIES.map((cat) =>
-              <option value={cat}>{cat}</option>
-            )}
-          </select>
-
-          <label>filter store: </label>
-          <select onChange={(event) => setStoreFilter(event.target.value)}>
-            <option value="all">all</option>
-            {STORES.map((store) =>
-              <option value={store}>{store}</option>
-            )}
-          </select>
+          <div id="cat-filter">
+            <label>filter category: </label>
+            <select onChange={(event) => setCatFilter(event.target.value)}>
+              <option value="all">all</option>
+              {CATEGORIES.map((cat) =>
+                <option value={cat}>{cat}</option>
+              )}
+            </select>
+          </div>
+          <div id="store-filter">
+            <label>filter store: </label>
+            <select onChange={(event) => setStoreFilter(event.target.value)}>
+              <option value="all">all</option>
+              {STORES.map((store) =>
+                <option value={store}>{store}</option>
+              )}
+            </select>
+          </div>
         </div>
         {CATEGORY_STORE_COMBOS.filter((combo) => (combo.category === catFilter || catFilter === "all") && (combo.store === storeFilter || storeFilter === "all")
           && items.some((item) => item.category === combo.category && item.store === combo.store && item.active)).map((combo) => (

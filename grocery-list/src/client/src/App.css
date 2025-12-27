@@ -24,6 +24,10 @@
   max-width: 600px;
 }
 
+#store-filter {
+  margin-top: 20px;
+}
+
 
 .item {
   z-index: 5;
