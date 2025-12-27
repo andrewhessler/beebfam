@@ -27,6 +27,7 @@ const CATEGORIES = [
 
 const STORES = [
   "hyvee",
+  "home depot",
   "target",
   "ulta",
   "amazon",
