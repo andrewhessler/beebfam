@@ -49,6 +49,13 @@ export const EXERCISES: Record<string, Exercise> = {
     sets: 3,
     reps: 10,
   },
+  "dumbbell row": {
+    name: "dumbbell row",
+    type: "anaerobic",
+    weight: 15,
+    sets: 3,
+    reps: 10,
+  },
   "tricep curls": {
     name: "tricep curls",
     type: "anaerobic",
