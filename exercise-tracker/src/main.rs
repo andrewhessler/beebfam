@@ -243,7 +243,6 @@ async fn get_templates(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<ExerciseTempla
         AnaerobicTemplate,
         r"
         SELECT * FROM anaerobic_template
-        LIMIT 100
         ",
     )
     .fetch_all(pool)
