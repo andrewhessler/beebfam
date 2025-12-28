@@ -65,6 +65,7 @@ function App() {
         map[template.name] = { ...template, type: template.type.toLowerCase() as ExerciseType };
       }
       setExerciseTemplates(map);
+      setExercise(map["biking"]);
     }
     async function getItems() {
       const response = await fetch("/get-items");
