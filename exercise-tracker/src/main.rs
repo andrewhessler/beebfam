@@ -175,6 +175,17 @@ async fn add_item_handler(
             )
             .execute(&state.pool)
             .await?;
+
+            sqlx::query!(
+                r"
+                UPDATE aerobic SET duration_min = ?2, distance = ?3 WHERE name = ?1
+                ",
+                req.name,
+                req.duration_min,
+                req.distance
+            )
+            .execute(&state.pool)
+            .await?;
         }
         ExerciseItemRequest::Anaerobic(req) => {
             sqlx::query!(
@@ -186,6 +197,18 @@ async fn add_item_handler(
                 req.sets,
                 req.reps,
                 now
+            )
+            .execute(&state.pool)
+            .await?;
+
+            sqlx::query!(
+                r"
+                UPDATE anaerobic SET weight = ?2, sets = ?3, reps = ?4 WHERE name = ?1
+                ",
+                req.name,
+                req.weight,
+                req.sets,
+                req.reps
             )
             .execute(&state.pool)
             .await?;
