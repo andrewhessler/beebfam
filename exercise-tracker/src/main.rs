@@ -59,7 +59,7 @@ struct AnaerobicTemplate {
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
-#[serde(untagged)]
+#[serde(tag = "type")]
 enum ExerciseTemplate {
     Aerobic(AerobicTemplate),
     Anaerobic(AnaerobicTemplate),

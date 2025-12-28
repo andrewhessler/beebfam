@@ -62,7 +62,7 @@ function App() {
       const { templates }: { templates: Exercise[] } = await response.json();
       const map: Record<string, Exercise> = {};
       for (const template of templates) {
-        map[template.name] = template;
+        map[template.name] = { ...template, type: template.type.toLowerCase() as ExerciseType };
       }
       setExerciseTemplates(map);
     }
