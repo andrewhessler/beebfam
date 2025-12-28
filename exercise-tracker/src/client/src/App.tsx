@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
-import { EXERCISES, type Exercise } from './exercises';
 
 type Item = {
   name: string,
@@ -12,9 +11,22 @@ type Item = {
   date: number,
 }
 
+export type ExerciseType = "anaerobic" | "aerobic";
+
+export type Exercise = {
+  name: string,
+  type: ExerciseType,
+  duration_min?: number | string,
+  distance?: number | string,
+  weight?: number | string,
+  sets?: number | string,
+  reps?: number | string,
+}
+
 
 function App() {
-  const [exercise, setExercise] = useState<Exercise>(EXERCISES["biking"]);
+  const [exerciseTemplates, setExerciseTemplates] = useState<Record<string, Exercise>>({});
+  const [exercise, setExercise] = useState<Exercise>({ name: "biking", type: 'aerobic' });
   const [exerciseHistory, setExerciseHistory] = useState<Item[]>([]);
 
   const dateGroupedHistory = useCallback(() => {
@@ -42,6 +54,18 @@ function App() {
   }, [exerciseHistory]);
 
   useEffect(() => {
+    async function getTemplates() {
+      const response = await fetch("/get-templates");
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const { templates }: { templates: Exercise[] } = await response.json();
+      const map: Record<string, Exercise> = {};
+      for (const template of templates) {
+        map[template.name] = template;
+      }
+      setExerciseTemplates(map);
+    }
     async function getItems() {
       const response = await fetch("/get-items");
       if (!response.ok) {
@@ -50,6 +74,7 @@ function App() {
       const { items } = await response.json();
       setExerciseHistory(items);
     }
+    getTemplates();
     getItems();
   }, [])
 
@@ -83,8 +108,8 @@ function App() {
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
         <div id="input">
-          <select id="input-select" onChange={(event) => setExercise(EXERCISES[event.target.value])}>
-            {Object.keys(EXERCISES).map((ex) =>
+          <select id="input-select" onChange={(event) => setExercise(exerciseTemplates[event.target.value])}>
+            {Object.keys(exerciseTemplates).map((ex) =>
               <option key={ex} value={ex}>{ex}</option>
             )}
           </select>

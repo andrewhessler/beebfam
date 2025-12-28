@@ -43,6 +43,33 @@ struct ItemResponse {
     items: Vec<ExerciseItem>,
 }
 
+#[derive(sqlx::FromRow, Debug, Deserialize, Serialize, Clone, Default)]
+struct AerobicTemplate {
+    name: String,
+    duration_min: Option<f64>,
+    distance: Option<f64>,
+}
+
+#[derive(sqlx::FromRow, Debug, Deserialize, Serialize, Clone, Default)]
+struct AnaerobicTemplate {
+    name: String,
+    weight: Option<f64>,
+    sets: Option<i64>,
+    reps: Option<i64>,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+#[serde(untagged)]
+enum ExerciseTemplate {
+    Aerobic(AerobicTemplate),
+    Anaerobic(AnaerobicTemplate),
+}
+
+#[derive(Deserialize, Serialize, Clone, Default, Debug)]
+struct TemplateResponse {
+    items: Vec<ExerciseTemplate>,
+}
+
 #[derive(Clone, Debug)]
 struct AppState {
     pub pool: Pool<Sqlite>,
@@ -74,6 +101,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/index.html", get(index_handler))
         .route("/assets/{*file}", get(static_handler))
         .route("/get-items", get(get_items_handler))
+        .route("/get-templates", get(get_templates_handler))
         .route("/add-item", post(add_item_handler))
         .with_state(AppState { pool, key });
 
@@ -95,6 +123,13 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
 async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemResponse>, AppError> {
     let items = get_items(&state.pool).await?;
     Ok(Json(ItemResponse { items }))
+}
+
+async fn get_templates_handler(
+    State(state): State<AppState>,
+) -> Result<Json<TemplateResponse>, AppError> {
+    let items = get_templates(&state.pool).await?;
+    Ok(Json(TemplateResponse { items }))
 }
 
 #[derive(Deserialize, Debug)]
@@ -189,6 +224,39 @@ async fn get_items(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<ExerciseItem>> {
         .into_iter()
         .map(ExerciseItem::Aerobic)
         .chain(anaerobic_items.into_iter().map(ExerciseItem::Anaerobic))
+        .collect();
+
+    Ok(items)
+}
+
+async fn get_templates(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<ExerciseTemplate>> {
+    let aerobic_templates = sqlx::query_as!(
+        AerobicTemplate,
+        r"
+        SELECT * FROM aerobic_template
+        ",
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let anaerobic_templates = sqlx::query_as!(
+        AnaerobicTemplate,
+        r"
+        SELECT * FROM anaerobic_template
+        LIMIT 100
+        ",
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let items: Vec<ExerciseTemplate> = aerobic_templates
+        .into_iter()
+        .map(ExerciseTemplate::Aerobic)
+        .chain(
+            anaerobic_templates
+                .into_iter()
+                .map(ExerciseTemplate::Anaerobic),
+        )
         .collect();
 
     Ok(items)
