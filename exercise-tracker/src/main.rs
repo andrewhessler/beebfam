@@ -67,7 +67,7 @@ enum ExerciseTemplate {
 
 #[derive(Deserialize, Serialize, Clone, Default, Debug)]
 struct TemplateResponse {
-    items: Vec<ExerciseTemplate>,
+    templates: Vec<ExerciseTemplate>,
 }
 
 #[derive(Clone, Debug)]
@@ -128,8 +128,8 @@ async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemRes
 async fn get_templates_handler(
     State(state): State<AppState>,
 ) -> Result<Json<TemplateResponse>, AppError> {
-    let items = get_templates(&state.pool).await?;
-    Ok(Json(TemplateResponse { items }))
+    let templates = get_templates(&state.pool).await?;
+    Ok(Json(TemplateResponse { templates }))
 }
 
 #[derive(Deserialize, Debug)]
