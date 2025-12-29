@@ -178,7 +178,7 @@ async fn add_item_handler(
 
             sqlx::query!(
                 r"
-                UPDATE aerobic SET duration_min = ?2, distance = ?3 WHERE name = ?1
+                UPDATE aerobic_template SET duration_min = ?2, distance = ?3 WHERE name = ?1
                 ",
                 req.name,
                 req.duration_min,
@@ -203,7 +203,7 @@ async fn add_item_handler(
 
             sqlx::query!(
                 r"
-                UPDATE anaerobic SET weight = ?2, sets = ?3, reps = ?4 WHERE name = ?1
+                UPDATE anaerobic_template SET weight = ?2, sets = ?3, reps = ?4 WHERE name = ?1
                 ",
                 req.name,
                 req.weight,
