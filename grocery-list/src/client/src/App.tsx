@@ -47,24 +47,10 @@ for (const store of STORES) {
 }
 
 function App() {
-  const [items, setItems] = useState<Item[]>([{
-    category: "household",
-    store: "home depot",
-    name: "wire snips",
-    qty: "",
-    active: true
-  }]);
+  const [items, setItems] = useState<Item[]>([]);
 
   // For some reason when we add new items to the datalist it opens, so this is in separate state and not updated after first fetch
-  const [itemsForSelect, setItemsForSelect] = useState<Item[]>([
-    {
-      category: "household",
-      store: "home depot",
-      name: "wire snips",
-      qty: "",
-      active: true
-    }
-  ]);
+  const [itemsForSelect, setItemsForSelect] = useState<Item[]>([]);
 
   const newItemRef = useRef(null);
   const [newItem, setNewItem] = useState<string | null>();
@@ -169,6 +155,7 @@ function App() {
             if (existingValue) {
               setCategory(existingValue.category);
               setStore(existingValue.store);
+              setQty(existingValue.qty);
             }
           }} />
           <datalist id="existing-names">
