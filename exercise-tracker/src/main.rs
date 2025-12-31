@@ -46,6 +46,7 @@ struct ItemResponse {
 #[derive(sqlx::FromRow, Debug, Deserialize, Serialize, Clone, Default)]
 struct AerobicTemplate {
     name: String,
+    category: String,
     duration_min: Option<f64>,
     distance: Option<f64>,
 }
@@ -53,6 +54,7 @@ struct AerobicTemplate {
 #[derive(sqlx::FromRow, Debug, Deserialize, Serialize, Clone, Default)]
 struct AnaerobicTemplate {
     name: String,
+    category: String,
     weight: Option<f64>,
     sets: Option<i64>,
     reps: Option<i64>,

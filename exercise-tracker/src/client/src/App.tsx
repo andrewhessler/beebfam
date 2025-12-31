@@ -23,10 +23,23 @@ export type Exercise = {
   reps?: number | string,
 }
 
+export type ExerciseTemplate = {
+  name: string,
+  type: ExerciseType,
+  category: string,
+  duration_min?: number | string,
+  distance?: number | string,
+  weight?: number | string,
+  sets?: number | string,
+  reps?: number | string,
+}
+
 
 function App() {
-  const [exerciseTemplates, setExerciseTemplates] = useState<Record<string, Exercise>>({});
+  const [exerciseTemplates, setExerciseTemplates] = useState<Record<string, ExerciseTemplate>>({});
   const [exercise, setExercise] = useState<Exercise>({ name: "biking", type: 'aerobic' });
+  const [exerciseCategory, setExerciseCategory] = useState<string>("misc");
+  const [exerciseCategories, setExerciseCategories] = useState<string[]>(["misc"]);
   const [exerciseHistory, setExerciseHistory] = useState<Item[]>([]);
 
   const dateGroupedHistory = useCallback(() => {
@@ -59,11 +72,14 @@ function App() {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      const { templates }: { templates: Exercise[] } = await response.json();
-      const map: Record<string, Exercise> = {};
+      const { templates }: { templates: ExerciseTemplate[] } = await response.json();
+      const map: Record<string, ExerciseTemplate> = {};
+      const categorySet: Set<string> = new Set();
       for (const template of templates) {
+        categorySet.add(template.category);
         map[template.name] = { ...template, type: template.type.toLowerCase() as ExerciseType };
       }
+      setExerciseCategories([...categorySet]);
       setExerciseTemplates(map);
       setExercise(map["biking"]);
     }
@@ -104,14 +120,28 @@ function App() {
     }
   }, [exercise])
 
+  // update exercise defaults when switching category
+  useEffect(() => {
+    const firstExercise = Object.values(exerciseTemplates).find((item) => item.category === exerciseCategory)!;
+    if (exerciseCategory && firstExercise) {
+      setExercise(firstExercise);
+
+    }
+  }, [exerciseCategory])
+
   return (
     <>
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
         <div id="input">
-          <select id="input-select" onChange={(event) => setExercise(exerciseTemplates[event.target.value])}>
-            {Object.keys(exerciseTemplates).map((ex) =>
+          <select id="input-select" onChange={(event) => setExerciseCategory(event.target.value)}>
+            {exerciseCategories.map((ex) =>
               <option key={ex} value={ex}>{ex}</option>
+            )}
+          </select>
+          <select id="input-select" onChange={(event) => setExercise(exerciseTemplates[event.target.value])}>
+            {Object.values(exerciseTemplates).filter((ex) => ex.category === exerciseCategory).map((ex) =>
+              <option key={ex.name} value={ex.name}>{ex.name}</option>
             )}
           </select>
           {exercise.type === "aerobic" ?
