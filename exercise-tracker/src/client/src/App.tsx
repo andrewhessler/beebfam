@@ -9,6 +9,7 @@ type Item = {
   sets?: number,
   reps?: number,
   date: number,
+  time: string,
 }
 
 export type ExerciseType = "anaerobic" | "aerobic";
@@ -48,6 +49,8 @@ function App() {
     exerciseHistory.forEach((item) => {
       const date = new Date(item.date * 1000);
       const dateKey = date.toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
+      const time = date.toLocaleTimeString('en-CA', { timeZone: 'America/Chicago' });
+      item.time = time;
 
       if (!dateGroups[dateKey]) {
         dateGroups[dateKey] = [];
@@ -190,7 +193,7 @@ function App() {
                     </div>
                     :
                     <div className="exercise-item">
-                      {item.name} {item.distance ? `dist: ${item.distance}` : ''} {item.duration_min ? `dur: ${item.duration_min}` : ''}
+                      {item.time} - {item.name} {item.distance ? `dist: ${item.distance}` : ''} {item.duration_min ? `dur: ${item.duration_min}` : ''}
                     </div>
                 ))}
               </div>
