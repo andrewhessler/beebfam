@@ -8,7 +8,7 @@ git pull
 
 cd $parent_path/src/client
 
-npm install
+npm ci
 
 npm run build
 

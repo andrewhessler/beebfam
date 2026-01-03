@@ -4,7 +4,7 @@ cd $parent_path
 
 git pull
 
-npm install
+npm ci
 
 npm run build
 
