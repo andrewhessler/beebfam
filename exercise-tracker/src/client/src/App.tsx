@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
+import Heatmap from './Heatmap';
 
 type Item = {
   name: string,
@@ -36,7 +38,7 @@ export type ExerciseTemplate = {
 }
 
 
-function App() {
+function Home() {
   const [exerciseTemplates, setExerciseTemplates] = useState<Record<string, ExerciseTemplate>>({});
   const [exercise, setExercise] = useState<Exercise>({ name: "biking", type: 'aerobic' });
   const [exerciseCategory, setExerciseCategory] = useState<string>("misc");
@@ -134,7 +136,6 @@ function App() {
 
   return (
     <>
-      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
         <div id="input">
           <select id="input-select" onChange={(event) => setExerciseCategory(event.target.value)}>
@@ -202,6 +203,22 @@ function App() {
         </div>
       </div>
     </>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
+      <nav style={{ padding: '1rem' }}>
+        <Link to="/" style={{ marginRight: '1rem' }}>Home</Link>
+        <Link to="/heatmap">Heatmap</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/heatmap" element={<Heatmap />} />
+      </Routes>
+    </Router>
   )
 }
 
