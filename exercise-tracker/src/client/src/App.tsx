@@ -137,7 +137,6 @@ function Home() {
   return (
     <>
       <div id="content">
-        test
         <div id="input">
           <select id="input-select" onChange={(event) => setExerciseCategory(event.target.value)}>
             {exerciseCategories.map((ex) =>
