@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
+import Heatmap from './Heatmap';
 
-type Item = {
+export type Item = {
   name: string,
   duration_min?: number,
   distance?: number,
@@ -36,7 +38,7 @@ export type ExerciseTemplate = {
 }
 
 
-function App() {
+function Home() {
   const [exerciseTemplates, setExerciseTemplates] = useState<Record<string, ExerciseTemplate>>({});
   const [exercise, setExercise] = useState<Exercise>({ name: "biking", type: 'aerobic' });
   const [exerciseCategory, setExerciseCategory] = useState<string>("misc");
@@ -134,7 +136,6 @@ function App() {
 
   return (
     <>
-      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
         <div id="input">
           <select id="input-select" onChange={(event) => setExerciseCategory(event.target.value)}>
@@ -202,6 +203,29 @@ function App() {
         </div>
       </div>
     </>
+  )
+}
+
+function Navigation() {
+  const location = useLocation();
+  return (
+    <>
+      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
+      {location.pathname !== '/' && <a id="left-link" href="/">Home</a>}
+      {location.pathname !== '/heatmap' && <a id="left-link" href="/heatmap">Heatmap</a>}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Navigation />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/heatmap" element={<Heatmap />} />
+      </Routes>
+    </Router>
   )
 }
 

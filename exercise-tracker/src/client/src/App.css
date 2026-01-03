@@ -16,6 +16,12 @@
   right: 10px;
 }
 
+#left-link {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
 #content {
   display: flex;
   flex-direction: column;

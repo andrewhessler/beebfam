@@ -1,6 +1,6 @@
 use axum::{
     Json, Router,
-    extract::State,
+    extract::{Query, State},
     http::{StatusCode, Uri, header},
     response::{IntoResponse, Response},
     routing::{get, post},
@@ -101,8 +101,13 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(index_handler))
         .route("/index.html", get(index_handler))
+        .route("/heatmap", get(index_handler))
         .route("/assets/{*file}", get(static_handler))
         .route("/get-items", get(get_items_handler))
+        .route(
+            "/get-history-by-exercise-name",
+            get(get_history_by_exercise_name_handler),
+        )
         .route("/get-templates", get(get_templates_handler))
         .route("/add-item", post(add_item_handler))
         .with_state(AppState { pool, key });
@@ -124,6 +129,19 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
 
 async fn get_items_handler(State(state): State<AppState>) -> Result<Json<ItemResponse>, AppError> {
     let items = get_items(&state.pool).await?;
+    Ok(Json(ItemResponse { items }))
+}
+
+#[derive(Deserialize)]
+struct ExerciseNameQuery {
+    name: String,
+}
+
+async fn get_history_by_exercise_name_handler(
+    State(state): State<AppState>,
+    Query(params): Query<ExerciseNameQuery>,
+) -> Result<Json<ItemResponse>, AppError> {
+    let items = get_history_by_exercise_name(&state.pool, &params.name).await?;
     Ok(Json(ItemResponse { items }))
 }
 
@@ -241,6 +259,43 @@ async fn get_items(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<ExerciseItem>> {
         ORDER BY date
         LIMIT 100
         ",
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let items: Vec<ExerciseItem> = aerobic_items
+        .into_iter()
+        .map(ExerciseItem::Aerobic)
+        .chain(anaerobic_items.into_iter().map(ExerciseItem::Anaerobic))
+        .collect();
+
+    Ok(items)
+}
+
+async fn get_history_by_exercise_name(
+    pool: &Pool<Sqlite>,
+    name: &str,
+) -> anyhow::Result<Vec<ExerciseItem>> {
+    let aerobic_items = sqlx::query_as!(
+        AerobicItem,
+        r"
+        SELECT * FROM aerobic
+        WHERE name = ?1
+        ORDER BY date
+        ",
+        name
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let anaerobic_items = sqlx::query_as!(
+        AnaerobicItem,
+        r"
+        SELECT * FROM anaerobic
+        WHERE name = ?1
+        ORDER BY date
+        ",
+        name
     )
     .fetch_all(pool)
     .await?;
