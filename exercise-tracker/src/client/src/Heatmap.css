@@ -1,0 +1,58 @@
+.heatmap-container {
+  padding: 1rem;
+  text-align: center;
+}
+
+.heatmap-stats {
+  margin-top: 1rem;
+  font-size: 14px;
+  color: #666;
+}
+
+.heatmap-grid {
+  margin-top: 2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.heatmap-week {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.heatmap-day {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #d1d5da;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.heatmap-day.has-exercise {
+  background-color: #40c463;
+}
+
+.heatmap-day.no-exercise {
+  background-color: #ebedf0;
+}
+
+.heatmap-tooltip {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+  transform: translate(10px, -30px);
+}
+
+@media (prefers-color-scheme: light) {
+  .heatmap-tooltip {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}

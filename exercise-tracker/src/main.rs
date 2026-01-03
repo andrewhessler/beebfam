@@ -101,9 +101,13 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(index_handler))
         .route("/index.html", get(index_handler))
+        .route("/heatmap", get(index_handler))
         .route("/assets/{*file}", get(static_handler))
         .route("/get-items", get(get_items_handler))
-        .route("/get-history-by-exercise-name", get(get_history_by_exercise_name_handler))
+        .route(
+            "/get-history-by-exercise-name",
+            get(get_history_by_exercise_name_handler),
+        )
         .route("/get-templates", get(get_templates_handler))
         .route("/add-item", post(add_item_handler))
         .with_state(AppState { pool, key });
@@ -268,7 +272,10 @@ async fn get_items(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<ExerciseItem>> {
     Ok(items)
 }
 
-async fn get_history_by_exercise_name(pool: &Pool<Sqlite>, name: &str) -> anyhow::Result<Vec<ExerciseItem>> {
+async fn get_history_by_exercise_name(
+    pool: &Pool<Sqlite>,
+    name: &str,
+) -> anyhow::Result<Vec<ExerciseItem>> {
     let aerobic_items = sqlx::query_as!(
         AerobicItem,
         r"

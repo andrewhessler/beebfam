@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import Heatmap from './Heatmap';
 
-type Item = {
+export type Item = {
   name: string,
   duration_min?: number,
   distance?: number,
@@ -206,14 +206,21 @@ function Home() {
   )
 }
 
+function Navigation() {
+  const location = useLocation();
+  return (
+    <>
+      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
+      {location.pathname !== '/' && <a id="left-link" href="/">Home</a>}
+      {location.pathname !== '/heatmap' && <a id="left-link" href="/heatmap">Heatmap</a>}
+    </>
+  );
+}
+
 function App() {
   return (
     <Router>
-      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
-      <nav style={{ padding: '1rem' }}>
-        <Link to="/" style={{ marginRight: '1rem' }}>Home</Link>
-        <Link to="/heatmap">Heatmap</Link>
-      </nav>
+      <Navigation />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/heatmap" element={<Heatmap />} />
