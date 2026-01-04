@@ -401,26 +401,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "exercise-tracker"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "auth-macro",
- "axum",
- "axum-extra",
- "chrono",
- "dotenvy",
- "log",
- "mime_guess",
- "rust-embed",
- "serde",
- "serde_json",
- "sqlx",
- "tokio",
- "tracing",
-]
-
-[[package]]
 name = "flume"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -550,6 +530,26 @@ name = "gimli"
 version = "0.31.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07e28edb80900c19c28f1072f2e8aeca7fa06b23cd4169cefe1af5aa3260783f"
+
+[[package]]
+name = "habit-tracker"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "auth-macro",
+ "axum",
+ "axum-extra",
+ "chrono",
+ "dotenvy",
+ "log",
+ "mime_guess",
+ "rust-embed",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tracing",
+]
 
 [[package]]
 name = "hashbrown"
