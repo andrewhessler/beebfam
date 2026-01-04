@@ -8,6 +8,7 @@
     "andrew-inbox/src/client",
     "chore-kanban/src/client",
     "exercise-tracker/src/client",
+    "habit-tracker/src/client",
     "grocery-list/src/client",
     "media-list/src/client"
   ],
