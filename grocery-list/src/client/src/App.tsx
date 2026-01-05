@@ -139,6 +139,15 @@ function App() {
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
         <div id="input">
+          <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => {
+            setNewItem(event.target.value);
+            const existingValue = items.find((item) => item.name === event.target.value);
+            if (existingValue) {
+              setCategory(existingValue.category);
+              setStore(existingValue.store);
+              setQty(existingValue.qty);
+            }
+          }} />
           <select id="input-select" onChange={(event) => setCategory(event.target.value)} value={category}>
             {CATEGORIES.map((cat) =>
               <option value={cat}>{cat}</option>
@@ -149,15 +158,6 @@ function App() {
               <option value={store}>{store}</option>
             )}
           </select>
-          <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => {
-            setNewItem(event.target.value);
-            const existingValue = items.find((item) => item.name === event.target.value);
-            if (existingValue) {
-              setCategory(existingValue.category);
-              setStore(existingValue.store);
-              setQty(existingValue.qty);
-            }
-          }} />
           <datalist id="existing-names">
             {
               itemsForSelect?.map((item) =>
