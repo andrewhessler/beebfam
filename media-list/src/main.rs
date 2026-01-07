@@ -99,7 +99,7 @@ async fn add_item_handler(
 
     sqlx::query!(
         r"
-            INSERT INTO items VALUES (?1, ?2, ?3) 
+            INSERT INTO items VALUES (?1, ?2, ?3, NULL) 
             ",
         req.name,
         req.category,
@@ -117,10 +117,13 @@ async fn delete_item_handler(
     State(state): State<AppState>,
     Json(req): Json<DeleteItemRequest>,
 ) -> Result<Json<ItemResponse>, AppError> {
+    let now = chrono::Utc::now().timestamp();
+
     sqlx::query!(
         r"
-        DELETE FROM items WHERE name = ?1
+        UPDATE items SET deleted_at = ?1 WHERE name = ?2
         ",
+        now,
         req.name
     )
     .execute(&state.pool)
@@ -134,7 +137,7 @@ async fn get_items(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<Item>> {
     let items = sqlx::query_as!(
         Item,
         r"
-        SELECT * FROM items
+        SELECT name, category, created_at FROM items WHERE deleted_at IS NULL
         ",
     )
     .fetch_all(pool)
