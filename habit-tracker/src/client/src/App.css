@@ -127,17 +127,9 @@ select {
   min-width: 80px;
 }
 
-.heatmap-table th:first-child {
-  text-align: left;
-}
-
 .heatmap-table td {
   padding: 8px;
   text-align: center;
-}
-
-.heatmap-table td:first-child {
-  font-size: 14px;
 }
 
 .heatmap-cell {
