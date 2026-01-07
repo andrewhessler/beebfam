@@ -116,20 +116,14 @@ function App() {
     if (percentage === 0) {
       return '#151b23'; // no-habit color
     }
-    
-    // Apply logarithmic scaling to make differences more visible
-    // Using log scale: log(1 + x) / log(2) gives better visual separation
-    const scaledPercentage = Math.log(1 + percentage) / Math.log(2);
-    
-    // Interpolate between a lighter green and full green
-    const fullColor = [64, 196, 99]; // #40c463 (full completion)
-    const partialColor = [30, 100, 50]; // much darker green for partial completion
-    
-    // Interpolate RGB values using scaled percentage
-    const r = Math.round(partialColor[0] + (fullColor[0] - partialColor[0]) * scaledPercentage);
-    const g = Math.round(partialColor[1] + (fullColor[1] - partialColor[1]) * scaledPercentage);
-    const b = Math.round(partialColor[2] + (fullColor[2] - partialColor[2]) * scaledPercentage);
-    
+
+    const fullColor = [64, 196, 99];
+    const baseColor = [21, 27, 35];
+
+    const r = Math.round(baseColor[0] + (fullColor[0] - baseColor[0]) * percentage);
+    const g = Math.round(baseColor[1] + (fullColor[1] - baseColor[1]) * percentage);
+    const b = Math.round(baseColor[2] + (fullColor[2] - baseColor[2]) * percentage);
+
     return `rgb(${r}, ${g}, ${b})`;
   };
 
@@ -137,7 +131,7 @@ function App() {
   const handleCellClick = (name: string, date: string) => {
     const count = getHabitCount(name, date);
     const max = getMaxOccurrences(name);
-    
+
     if (count < max) {
       handleAddHabit(name, date);
     }
@@ -172,7 +166,7 @@ function App() {
                   {habitTemplates.map(template => {
                     const count = getHabitCount(template.name, date);
                     const max = getMaxOccurrences(template.name);
-                    
+
                     return (
                       <td key={`${date}-${template.name}`}>
                         <div
