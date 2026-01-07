@@ -151,7 +151,6 @@ function App() {
           <table className="heatmap-table">
             <thead>
               <tr>
-                <th>Date</th>
                 {habitTemplates.map(template => (
                   <th key={template.name}>
                     {template.name}
@@ -162,7 +161,6 @@ function App() {
             <tbody>
               {dates.map(date => (
                 <tr key={date}>
-                  <td>{date}</td>
                   {habitTemplates.map(template => {
                     const count = getHabitCount(template.name, date);
                     const max = getMaxOccurrences(template.name);
