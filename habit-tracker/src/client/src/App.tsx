@@ -21,7 +21,7 @@ interface TemplatesResponse {
   templates: HabitTemplate[];
 }
 
-const DAYS = 7;
+const DAYS = 90;
 function App() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [habitTemplates, setHabitTemplates] = useState<HabitTemplate[]>([]);
@@ -89,7 +89,7 @@ function App() {
   const dates = Array.from({ length: DAYS }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    return d.toISOString().split('T')[0];
+    return d.toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
   });
 
   // Count how many times a habit has been completed on a given date
@@ -159,7 +159,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {dates.map(date => (
+              {dates.filter((date) => date <= (new Date()).toLocaleDateString('en-CA', { timeZone: 'America/Chicago' }) && date >= '2026-01-01').map(date => (
                 <tr key={date}>
                   {habitTemplates.map(template => {
                     const count = getHabitCount(template.name, date);
