@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Sqlite, SqlitePool, sqlite::SqliteConnectOptions};
 use std::{env, fs, net::SocketAddr};
 
-const DAYS_TO_FETCH: i64 = 7;
+const DAYS_TO_FETCH: i64 = 90;
 
 #[derive(sqlx::FromRow, Debug, Deserialize, Serialize, Clone)]
 struct Habit {
