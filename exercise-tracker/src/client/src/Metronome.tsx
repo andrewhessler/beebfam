@@ -22,9 +22,8 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const timeoutRef = useRef<number | null>(null);
-  const soundBuffersRef = useRef<{ common: AudioBuffer | null; accent: AudioBuffer | null; warmup: AudioBuffer | null }>({
+  const soundBuffersRef = useRef<{ common: AudioBuffer | null; warmup: AudioBuffer | null }>({
     common: null,
-    accent: null,
     warmup: null,
   });
 
@@ -59,12 +58,11 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
 
     soundBuffersRef.current = {
       common: createSound(440, 0.7),
-      accent: createSound(880, 0.9),
       warmup: createSound(330, 0.5),
     };
   }, [createSound]);
 
-  const playClick = useCallback((type: 'common' | 'accent' | 'warmup') => {
+  const playClick = useCallback((type: 'common' | 'warmup') => {
     if (!audioContextRef.current) return;
 
     const audioContext = audioContextRef.current;
@@ -119,7 +117,7 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
         const mainBeatNumber = beatCount - totalWarmup + 1;
         setCurrentBeat(mainBeatNumber);
         // Use accent sound for first beat, common sound for others
-        playClick(mainBeatNumber === 1 ? 'accent' : 'common');
+        playClick('common');
         beatCount++;
         timeoutRef.current = window.setTimeout(tick, interval);
       } else {
