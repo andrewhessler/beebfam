@@ -22,25 +22,63 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const timeoutRef = useRef<number | null>(null);
+  const soundBuffersRef = useRef<{ common: AudioBuffer | null; accent: AudioBuffer | null; warmup: AudioBuffer | null }>({
+    common: null,
+    accent: null,
+    warmup: null,
+  });
 
-  const playClick = useCallback((frequency: number = 800) => {
+  const createSound = useCallback((frequency: number, volume: number): AudioBuffer | null => {
+    // sound math from https://metronome-online.com/
+    if (!audioContextRef.current) return null;
+
+    const audioContext = audioContextRef.current;
+    const sampleRate = audioContext.sampleRate;
+    const duration = sampleRate * 0.1;
+    const buffer = audioContext.createBuffer(1, duration, sampleRate);
+    const channelData = buffer.getChannelData(0);
+
+    const angularFreq = 2 * Math.PI / sampleRate * frequency;
+    const decay1 = 100 / sampleRate;
+    const decay2 = 200 / sampleRate;
+    const decay3 = 500 / sampleRate;
+
+    for (let i = 0; i < duration; i++) {
+      channelData[i] = volume * (
+        0.09 * Math.exp(-i * decay1) * Math.sin(angularFreq * i) +
+        0.34 * Math.exp(-i * decay2) * Math.sin(2 * angularFreq * i) +
+        0.57 * Math.exp(-i * decay3) * Math.sin(6 * angularFreq * i)
+      );
+    }
+
+    return buffer;
+  }, []);
+
+  const initializeSounds = useCallback(() => {
+    if (!audioContextRef.current) return;
+
+    soundBuffersRef.current = {
+      common: createSound(440, 0.7),
+      accent: createSound(880, 0.9),
+      warmup: createSound(330, 0.5),
+    };
+  }, [createSound]);
+
+  const playClick = useCallback((type: 'common' | 'accent' | 'warmup') => {
     if (!audioContextRef.current) return;
 
     const audioContext = audioContextRef.current;
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    const buffer = soundBuffersRef.current[type];
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    if (!buffer) return;
 
-    oscillator.frequency.value = frequency;
-    oscillator.type = 'square';
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
 
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.1);
+    const t = audioContext.currentTime;
+    source.start(t);
+    source.stop(t + 0.05);
   }, []);
 
   const stopMetronome = useCallback(() => {
@@ -57,6 +95,7 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
     // Initialize audio context on user interaction
     if (!audioContextRef.current) {
       audioContextRef.current = new AudioContext();
+      initializeSounds();
     }
 
     const interval = 60000 / bpm;
@@ -70,27 +109,26 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
 
     const tick = () => {
       if (beatCount < totalWarmup) {
-        // Warmup phase - lower frequency
         setIsWarmup(true);
         setCurrentBeat(beatCount + 1);
-        playClick(400);
+        playClick('warmup');
         beatCount++;
         timeoutRef.current = window.setTimeout(tick, interval);
       } else if (beatCount < totalWarmup + totalBeats) {
-        // Main phase - higher frequency
         setIsWarmup(false);
-        setCurrentBeat(beatCount - totalWarmup + 1);
-        playClick(800);
+        const mainBeatNumber = beatCount - totalWarmup + 1;
+        setCurrentBeat(mainBeatNumber);
+        // Use accent sound for first beat, common sound for others
+        playClick(mainBeatNumber === 1 ? 'accent' : 'common');
         beatCount++;
         timeoutRef.current = window.setTimeout(tick, interval);
       } else {
-        // Done
         stopMetronome();
       }
     };
 
     tick();
-  }, [bpm, beats, warmupBeats, playClick, stopMetronome]);
+  }, [bpm, beats, warmupBeats, playClick, stopMetronome, initializeSounds]);
 
   const handleToggle = useCallback(() => {
     if (isPlaying) {
