@@ -29,6 +29,7 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
 
   const createSound = useCallback((frequency: number, volume: number): AudioBuffer | null => {
     // sound math from https://metronome-online.com/
+    // ON MOBILE: sounds will not play if phone is in silent mode, sounds are treated as ringtones, not media
     if (!audioContextRef.current) return null;
 
     const audioContext = audioContextRef.current;
@@ -122,7 +123,6 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
         setIsWarmup(false);
         const mainBeatNumber = beatCount - totalWarmup + 1;
         setCurrentBeat(mainBeatNumber);
-        // Use accent sound for first beat, common sound for others
         playClick('common');
         beatCount++;
         timeoutRef.current = window.setTimeout(tick, interval);
