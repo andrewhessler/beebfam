@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import Heatmap from './Heatmap';
+import Metronome from './Metronome';
 
 export type Item = {
   name: string,
@@ -180,6 +181,7 @@ function Home() {
               </div>
             </>)
           }
+          <Metronome beats={exercise.reps} beatMultiplier={2} />
         </div>
         <div id="exercise-history">
           {(() => {
