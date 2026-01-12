@@ -15,6 +15,7 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
     setBeats(newBeats * beatsMultiplierProp);
   }, [beatsProp, beatsMultiplierProp]);
 
+  const [plays, setPlays] = useState<number>(0);
   const [warmupBeats, setWarmupBeats] = useState<number>(2);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentBeat, setCurrentBeat] = useState<number>(0);
@@ -22,9 +23,10 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const timeoutRef = useRef<number | null>(null);
-  const soundBuffersRef = useRef<{ common: AudioBuffer | null; warmup: AudioBuffer | null }>({
+  const soundBuffersRef = useRef<{ common: AudioBuffer | null; warmup: AudioBuffer | null; accent: AudioBuffer | null }>({
     common: null,
     warmup: null,
+    accent: null,
   });
 
   const createSound = useCallback((frequency: number, volume: number): AudioBuffer | null => {
@@ -60,10 +62,11 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
     soundBuffersRef.current = {
       common: createSound(440, 0.7),
       warmup: createSound(330, 0.5),
+      accent: createSound(880, 0.5),
     };
   }, [createSound]);
 
-  const playClick = useCallback((type: 'common' | 'warmup') => {
+  const playClick = useCallback((type: 'common' | 'warmup' | 'accent') => {
     if (!audioContextRef.current) return;
 
     const audioContext = audioContextRef.current;
@@ -123,11 +126,16 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
         setIsWarmup(false);
         const mainBeatNumber = beatCount - totalWarmup + 1;
         setCurrentBeat(mainBeatNumber);
-        playClick('common');
+        if (beatCount === totalBeats + 1) {
+          playClick('accent');
+        } else {
+          playClick('common');
+        }
         beatCount++;
         timeoutRef.current = window.setTimeout(tick, interval);
       } else {
         stopMetronome();
+        setPlays((p) => p + 1);
       }
     };
 
@@ -146,6 +154,9 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
     <div className="metronome-container">
       <h2>Metronome</h2>
 
+      <div className="metronome-plays">
+        <span id="plays">Sets Played: {plays}</span>
+      </div>
       <div className="metronome-inputs">
         <div className="metronome-input-group">
           <label htmlFor="bpm">BPM:</label>
