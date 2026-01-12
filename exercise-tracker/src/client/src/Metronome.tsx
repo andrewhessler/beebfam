@@ -76,7 +76,7 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
 
     const t = audioContext.currentTime;
     source.start(t);
-    source.stop(t + 0.05);
+    source.stop(t + 0.1);
   }, []);
 
   const stopMetronome = useCallback(() => {
@@ -89,11 +89,17 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
     setIsWarmup(true);
   }, []);
 
-  const startMetronome = useCallback(() => {
-    // Initialize audio context on user interaction
+  const startMetronome = useCallback(async () => {
+    // Initialize audio context on user interaction (with Safari fallback)
     if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContext();
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioContextRef.current = new AudioContextClass();
       initializeSounds();
+    }
+
+    // Resume AudioContext if suspended (required for mobile browsers)
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume();
     }
 
     const interval = 60000 / bpm;
