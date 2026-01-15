@@ -45,6 +45,8 @@ function Home() {
   const [exerciseCategory, setExerciseCategory] = useState<string>("misc");
   const [exerciseCategories, setExerciseCategories] = useState<string[]>(["misc"]);
   const [exerciseHistory, setExerciseHistory] = useState<Item[]>([]);
+  const [flashSuccess, setFlashSuccess] = useState<boolean>(false);
+  const [resetKey, setResetKey] = useState<number>(0);
 
   const dateGroupedHistory = useCallback(() => {
     const dateGroups: Record<string, Item[]> = {};
@@ -123,6 +125,9 @@ function Home() {
       }
       const { items } = await response.json();
       setExerciseHistory(items);
+      setFlashSuccess(true);
+      setTimeout(() => setFlashSuccess(false), 500);
+      setResetKey(k => k + 1);
     }
   }, [exercise])
 
@@ -138,7 +143,7 @@ function Home() {
   return (
     <>
       <div id="content">
-        <div id="input">
+        <div id="input" className={flashSuccess ? 'flash-green' : ''}>
           <select id="input-select" onChange={(event) => setExerciseCategory(event.target.value)}>
             {exerciseCategories.map((ex) =>
               <option key={ex} value={ex}>{ex}</option>
@@ -181,7 +186,7 @@ function Home() {
               </div>
             </>)
           }
-          <Metronome beats={exercise.reps} beatMultiplier={2} />
+          <Metronome beats={exercise.reps} beatMultiplier={2} resetKey={resetKey} />
         </div>
         <div id="exercise-history">
           {(() => {

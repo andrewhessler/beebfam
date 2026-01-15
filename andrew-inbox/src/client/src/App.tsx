@@ -10,6 +10,7 @@ type Item = {
 function App() {
   const [items, setItems] = useState<Item[]>([]);
   const [newItem, setNewItem] = useState<string>("");
+  const [flashSuccess, setFlashSuccess] = useState<boolean>(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -55,6 +56,8 @@ function App() {
       const { items } = await response.json();
       setItems(items);
       setNewItem("");
+      setFlashSuccess(true);
+      setTimeout(() => setFlashSuccess(false), 500);
     }
   }, [newItem])
 
@@ -67,7 +70,7 @@ function App() {
     <>
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="items">
-        <input ref={inputRef} type="text" value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
+        <input ref={inputRef} type="text" className={flashSuccess ? 'flash-green' : ''} value={newItem} onKeyDown={addItem} onChange={(event) => setNewItem(event.target.value)} />
         {items.sort((a, b) => b.created_at - a.created_at).map((item) =>
           <button className="item" onClick={() => deleteItem(item)}>
             <div className="item-card">

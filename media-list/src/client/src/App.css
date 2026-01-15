@@ -93,3 +93,16 @@ select {
     background-color: #f9f9f9;
   }
 }
+
+.flash-green {
+  animation: flash-green 0.5s ease-out;
+}
+
+@keyframes flash-green {
+  0% {
+    background-color: rgba(0, 255, 0, 0.5);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
