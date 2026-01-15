@@ -21,6 +21,7 @@ function App() {
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [filter, setFilter] = useState<string>("all");
   const [showAndrew, setShowAndrew] = useState<boolean>(false);
+  const [flashSuccess, setFlashSuccess] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -70,6 +71,8 @@ function App() {
       const { items } = await response.json();
       setItems(items);
       setNewItem(null);
+      setFlashSuccess(true);
+      setTimeout(() => setFlashSuccess(false), 500);
       if (newItemRef.current) {
         (newItemRef.current as HTMLInputElement).focus();
       }
@@ -80,7 +83,7 @@ function App() {
     <>
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
-        <div id="input">
+        <div id="input" className={flashSuccess ? 'flash-green' : ''}>
           <select id="input-select" onChange={(event) => setCategory(event.target.value)}>
             {CATEGORIES.map((cat) =>
               <option value={cat}>{cat}</option>

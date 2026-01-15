@@ -59,6 +59,7 @@ function App() {
   const [store, setStore] = useState<string>(STORES[0]);
   const [catFilter, setCatFilter] = useState<string>("all");
   const [storeFilter, setStoreFilter] = useState<string>("all");
+  const [flashSuccess, setFlashSuccess] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -114,6 +115,8 @@ function App() {
       setItems(fetchedItems);
       setNewItem("");
       setQty(null);
+      setFlashSuccess(true);
+      setTimeout(() => setFlashSuccess(false), 500);
     }
   }, [newItem, qty, category, store])
 
@@ -138,7 +141,7 @@ function App() {
     <>
       <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div id="content">
-        <div id="input">
+        <div id="input" className={flashSuccess ? 'flash-green' : ''}>
           <input type="text" list="existing-names" ref={newItemRef} value={newItem ? newItem : ""} placeholder='name' onKeyDown={addItem} onChange={(event) => {
             setNewItem(event.target.value);
             const existingValue = items.find((item) => item.name === event.target.value);
