@@ -126,16 +126,19 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
         setIsWarmup(false);
         const mainBeatNumber = beatCount - totalWarmup + 1;
         setCurrentBeat(mainBeatNumber);
-        if (beatCount === totalBeats + 1) {
+        const isLastBeat = beatCount === totalWarmup + totalBeats - 1;
+        if (isLastBeat) {
           playClick('accent');
         } else {
           playClick('common');
         }
         beatCount++;
-        timeoutRef.current = window.setTimeout(tick, interval);
-      } else {
-        stopMetronome();
-        setPlays((p) => p + 1);
+        if (beatCount === totalWarmup + totalBeats) {
+          stopMetronome();
+          setPlays((p) => p + 1);
+        } else {
+          timeoutRef.current = window.setTimeout(tick, interval);
+        }
       }
     };
 
