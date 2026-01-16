@@ -4,9 +4,10 @@ import './Metronome.css';
 interface MetronomeProps {
   beats?: string | number;
   beatMultiplier?: number;
+  resetKey?: number;
 }
 
-function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp = 1 }: MetronomeProps) {
+function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp = 1, resetKey }: MetronomeProps) {
   const [bpm, setBpm] = useState<number>(50);
   const [beats, setBeats] = useState<number>(Number.isInteger(beatsProp) ? beatsProp as number * beatsMultiplierProp : parseInt(beatsProp as string) * beatsMultiplierProp);
 
@@ -16,6 +17,11 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
   }, [beatsProp, beatsMultiplierProp]);
 
   const [plays, setPlays] = useState<number>(0);
+
+  useEffect(() => {
+    setPlays(0);
+  }, [resetKey]);
+
   const [warmupBeats, setWarmupBeats] = useState<number>(2);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentBeat, setCurrentBeat] = useState<number>(0);
