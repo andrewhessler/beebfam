@@ -9,11 +9,15 @@ interface MetronomeProps {
 
 function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp = 1, resetKey }: MetronomeProps) {
   const [bpm, setBpm] = useState<number>(50);
+  const [bpmInput, setBpmInput] = useState<string>('50');
   const [beats, setBeats] = useState<number>(Number.isInteger(beatsProp) ? beatsProp as number * beatsMultiplierProp : parseInt(beatsProp as string) * beatsMultiplierProp);
+  const [beatsInput, setBeatsInput] = useState<string>(String(Number.isInteger(beatsProp) ? beatsProp as number * beatsMultiplierProp : parseInt(beatsProp as string) * beatsMultiplierProp));
 
   useEffect(() => {
     const newBeats = Number.isInteger(beatsProp) ? beatsProp as number : parseInt(beatsProp as string);
-    setBeats(newBeats * beatsMultiplierProp);
+    const calculatedBeats = newBeats * beatsMultiplierProp;
+    setBeats(calculatedBeats);
+    setBeatsInput(String(calculatedBeats));
   }, [beatsProp, beatsMultiplierProp]);
 
   const [plays, setPlays] = useState<number>(0);
@@ -23,6 +27,7 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
   }, [resetKey]);
 
   const [warmupBeats, setWarmupBeats] = useState<number>(2);
+  const [warmupBeatsInput, setWarmupBeatsInput] = useState<string>('2');
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentBeat, setCurrentBeat] = useState<number>(0);
   const [isWarmup, setIsWarmup] = useState<boolean>(true);
@@ -171,12 +176,16 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
           <label htmlFor="bpm">BPM:</label>
           <input
             id="bpm"
-            type="number"
-            value={bpm}
-            onChange={(e) => setBpm(Math.max(1, parseInt(e.target.value) || 1))}
+            type="text"
+            value={bpmInput}
+            onChange={(e) => setBpmInput(e.target.value)}
+            onBlur={() => {
+              const parsed = parseInt(bpmInput);
+              const valid = Math.max(1, Math.min(300, parsed || 1));
+              setBpm(valid);
+              setBpmInput(String(valid));
+            }}
             disabled={isPlaying}
-            min="1"
-            max="300"
           />
         </div>
 
@@ -184,11 +193,16 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
           <label htmlFor="warmup">Warmup Beats:</label>
           <input
             id="warmup"
-            type="number"
-            value={warmupBeats}
-            onChange={(e) => setWarmupBeats(Math.max(0, parseInt(e.target.value) || 0))}
+            type="text"
+            value={warmupBeatsInput}
+            onChange={(e) => setWarmupBeatsInput(e.target.value)}
+            onBlur={() => {
+              const parsed = parseInt(warmupBeatsInput);
+              const valid = Math.max(0, parsed || 0);
+              setWarmupBeats(valid);
+              setWarmupBeatsInput(String(valid));
+            }}
             disabled={isPlaying}
-            min="0"
           />
         </div>
 
@@ -196,11 +210,16 @@ function Metronome({ beats: beatsProp = 20, beatMultiplier: beatsMultiplierProp 
           <label htmlFor="beats">Main Beats:</label>
           <input
             id="beats"
-            type="number"
-            value={beats}
-            onChange={(e) => setBeats(Math.max(1, parseInt(e.target.value) || 1))}
+            type="text"
+            value={beatsInput}
+            onChange={(e) => setBeatsInput(e.target.value)}
+            onBlur={() => {
+              const parsed = parseInt(beatsInput);
+              const valid = Math.max(1, parsed || 1);
+              setBeats(valid);
+              setBeatsInput(String(valid));
+            }}
             disabled={isPlaying}
-            min="1"
           />
         </div>
       </div>
