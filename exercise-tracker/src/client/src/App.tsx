@@ -38,6 +38,10 @@ export type ExerciseTemplate = {
   reps?: number | string,
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isInput(value: any): value is React.KeyboardEvent<HTMLInputElement> {
+  return !!value.key;
+}
 
 function Home() {
   const [exerciseTemplates, setExerciseTemplates] = useState<Record<string, ExerciseTemplate>>({});
@@ -103,8 +107,8 @@ function Home() {
     getItems();
   }, [])
 
-  const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
+  const addItem = useCallback(async (event: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => {
+    if ((isInput(event) && event.key === "Enter") || !isInput(event)) {
       const response = await fetch(`/add-item`, {
         method: "POST",
         body: JSON.stringify({
@@ -186,6 +190,18 @@ function Home() {
               </div>
             </>)
           }
+          <div>
+            Times Done: {exerciseHistory.reduce((curr, item) => {
+              if (item.reps &&
+                item.reps === exercise.reps &&
+                item.sets === exercise.sets &&
+                item.weight === exercise.weight) {
+                return curr + 1;
+              }
+              return curr;
+            }, 0)}
+          </div>
+          <button onClick={addItem}>Submit</button>
           <Metronome beats={exercise.reps} beatMultiplier={2} resetKey={resetKey} />
         </div>
         <div id="exercise-history">
