@@ -195,7 +195,9 @@ function Home() {
               if (item.reps &&
                 item.reps === exercise.reps &&
                 item.sets === exercise.sets &&
-                item.weight === exercise.weight) {
+                item.weight === exercise.weight &&
+                item.name === exercise.name
+              ) {
                 return curr + 1;
               }
               return curr;
