@@ -245,7 +245,7 @@ async fn get_items(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<ExerciseItem>> {
         AerobicItem,
         r"
         SELECT * FROM aerobic
-        ORDER BY date
+        ORDER BY date DESC
         LIMIT 100
         ",
     )
@@ -256,7 +256,7 @@ async fn get_items(pool: &Pool<Sqlite>) -> anyhow::Result<Vec<ExerciseItem>> {
         AnaerobicItem,
         r"
         SELECT * FROM anaerobic
-        ORDER BY date
+        ORDER BY date DESC
         LIMIT 100
         ",
     )
