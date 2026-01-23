@@ -1,4 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta>
   <meta content="width=device-width, initial-scale=1" name="viewport" />
   <link rel="stylesheet" href="./assets/index.css" />
   <title>Beebfam Hub</title>
@@ -51,8 +54,8 @@
       <div class="granular-light-control">
         <div class="light-control-group">
           <div class="on-off-container">
-            <button class="light-switch" onclick="toggleLights(['small living room', 'tall living room'], true)">On</button>
-            <button class="light-switch" onclick="toggleLights(['small living room', 'tall living room'], false)">Off</button>
+            <button class="light-switch" onclick="toggleLights(['small living room', 'tall living room', 'bubble lamp'], true)">On</button>
+            <button class="light-switch" onclick="toggleLights(['small living room', 'tall living room', 'bubble lamp'], false)">Off</button>
           </div>
           <div class="light-control-label">Living Room</div>
         </div>
@@ -76,6 +79,13 @@
             <button class="light-switch" onclick="toggleLights(['tall living room'], false)">Off</button>
           </div>
           <div class="light-control-label">Tall Lamp</div>
+        </div>
+        <div class="light-control-group">
+          <div class="on-off-container">
+            <button class="light-switch" onclick="toggleLights(['bubble lamp'], true)">On</button>
+            <button class="light-switch" onclick="toggleLights(['bubble lamp'], false)">Off</button>
+          </div>
+          <div class="light-control-label">Bubble Lamp</div>
         </div>
         <div class="light-control-group">
           <div class="on-off-container">
@@ -132,4 +142,5 @@
     ], false)}
   </script>
 </body>
+</html>
 
