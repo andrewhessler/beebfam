@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import './App.css';
+import { RoundDisplay } from './RoundDisplay';
 
 const ALL_OPTIONS = [
   "mario bros' circuit", "crown city", "desert hills", "koopa troopa beach", "moo moo meadows", "dk spaceport", "whistlestop summit",
@@ -33,6 +34,7 @@ function App() {
         </select>
         {roundResults?.map((result, index) =>
           <div className='round-card' key={"round " + index}>
+            <RoundDisplay />
             <div className='round-name'>
               Round {index + 1}
             </div>
