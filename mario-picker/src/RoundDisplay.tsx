@@ -18,15 +18,15 @@ const fsSource = `
     float x = st.x;
     float y = st.y;
 
-    if (u_mouse.x == gl_FragCoord.x) {
-      x = 0.0;
+    if (
+      abs(u_mouse.x - gl_FragCoord.x) < 5.0 &&
+      abs(u_mouse.y - gl_FragCoord.y) < 5.0
+    ) {
+      y = 1.0;
+      x = 1.0;
     }
 
-    if (u_mouse.y == gl_FragCoord.y) {
-      y = 0.0;
-    }
-
-    gl_FragColor = vec4(1.0, x, y, 1.0);
+    gl_FragColor = vec4(0.0, x, y, 1.0);
   }
 `;
 
@@ -66,6 +66,7 @@ function createProgram(gl: WebGLRenderingContext, shaders: WebGLShader[]): WebGL
 export function RoundDisplay() {
   const divRef = useRef<HTMLDivElement | null>(null);
   const baseRef = useRef<HTMLCanvasElement | null>(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const div = divRef.current;
@@ -79,6 +80,17 @@ export function RoundDisplay() {
     if (div) {
       div.appendChild(baseRef.current);
     }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const canvas = baseRef.current!;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      mouseRef.current.x = (e.clientX - rect.left) * scaleX;
+      mouseRef.current.y = canvas.height - (e.clientY - rect.top) * scaleY;
+    };
+
+    baseRef.current.addEventListener('mousemove', handleMouseMove);
 
     const gl = baseRef.current.getContext("webgl");
     if (!gl) {
@@ -125,6 +137,7 @@ export function RoundDisplay() {
       const elapsed = (performance.now() - startTime) / 1000;
       gl.uniform1f(timeLocation, elapsed);
       gl.uniform2f(resLocation, 800, 600);
+      gl.uniform2f(mouseLocation, mouseRef.current.x, mouseRef.current.y);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       animationId = requestAnimationFrame(render);
     }
@@ -133,6 +146,7 @@ export function RoundDisplay() {
 
     return () => {
       cancelAnimationFrame(animationId);
+      baseRef.current?.removeEventListener('mousemove', handleMouseMove);
       // strict mode shenanigans clean up
       if (baseRef.current && div) {
         div.removeChild(baseRef.current);
