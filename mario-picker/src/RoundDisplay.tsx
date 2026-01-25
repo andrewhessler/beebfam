@@ -60,9 +60,9 @@ function createProgram(gl: WebGLRenderingContext, shaders: WebGLShader[]): WebGL
   return program;
 }
 
-/*
-  * Round as is in Mario Kart Race VS Round, not like the shape
-  */
+/**
+ * Round as is in Mario Kart Race VS Round, not like the shape
+ */
 export function RoundDisplay() {
   const divRef = useRef<HTMLDivElement | null>(null);
   const baseRef = useRef<HTMLCanvasElement | null>(null);
