@@ -15,18 +15,43 @@ const fsSource = `
 
   void main() {
     vec2 st = gl_FragCoord.xy/u_resolution;
-    float x = st.x;
-    float y = st.y;
 
-    if (
-      abs(u_mouse.x - gl_FragCoord.x) < 5.0 &&
-      abs(u_mouse.y - gl_FragCoord.y) < 5.0
-    ) {
-      y = 1.0;
-      x = 1.0;
+    float r = abs(sin(u_mouse.x * 0.01));
+    float g = abs(sin(u_mouse.y * 0.01));
+    float b = abs(sin((u_mouse.y + u_mouse.x) * 0.01));
+    r = (r + st.x + st.y) / 3.0;
+
+    if (abs(st.x - 0.5) < (0.01) + abs(sin(u_time)) * 0.1) {
+      r = 0.7;
+      g = 0.0;
+      b = 0.7;
     }
 
-    gl_FragColor = vec4(0.0, x, y, 1.0);
+    float mouse_rel_x = abs(u_mouse.x - gl_FragCoord.x);
+    float mouse_rel_y = abs(u_mouse.y - gl_FragCoord.y);
+
+    if (
+      mouse_rel_x < 5.0 &&
+      mouse_rel_y < 5.0
+    ) {
+      r = 1.0;
+      g = 1.0;
+      b = 1.0;
+    }
+
+    float offset = abs(sin(u_time * 2.0)) * 5.0;
+
+    if (
+      mouse_rel_x < 10.0 + offset && mouse_rel_x > 5.0 + offset
+      &&
+      mouse_rel_y < 10.0 + offset && mouse_rel_y > 5.0 + offset
+    ) {
+      r = 1.0;
+      g = 1.0;
+      b = 1.0;
+    }
+
+    gl_FragColor = vec4(r, g, b, 1.0);
   }
 `;
 
