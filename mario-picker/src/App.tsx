@@ -34,7 +34,7 @@ function App() {
         </select>
         {roundResults?.map((result, index) =>
           <div className='round-card' key={"round " + index}>
-            <RoundDisplay />
+            <RoundDisplay seed={Math.random()} />
             <div className='round-name'>
               Round {index + 1}
             </div>
