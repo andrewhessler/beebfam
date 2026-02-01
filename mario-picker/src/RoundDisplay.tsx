@@ -13,6 +13,7 @@ const fsSource = `
   uniform vec2 u_resolution;
   uniform vec2 u_mouse;
   uniform float u_seed;
+  uniform sampler2D u_texture;
 
   #define NUM_BALLS 100
 
@@ -64,22 +65,24 @@ const fsSource = `
         0.5 + 0.6 * snoise(vec2(u_time * 0.01 + 50.0, fi))
       );
       pos.x *= aspect;
-      float r = (0.09) + 0.03 * sin(fi * 2.0);
+      float r = (0.06) + 0.03 * sin(fi * 2.0);
       vec2 aspect_dist = st - pos;
       field += (r * r) / dot(aspect_dist, aspect_dist);
     }
     
     float blob = smoothstep(0.97, 1.03, field);
     
-    vec3 color = mix(vec3(0.1, 0.1, 0.2), vec3(0.2, 0.8, 0.4), blob);
-    color += 0.1 * smoothstep(1.0, 2.0, field);  // brighter in center
+    // Sample texture (use non-aspect-corrected coords)
+    vec2 texCoord = gl_FragCoord.xy / u_resolution;
+    vec4 texColor = texture2D(u_texture, texCoord);
     
-    gl_FragColor = vec4(color, 1.0);
+    // Use metaball as alpha - transparent where no blob
+    gl_FragColor = vec4(texColor.rgb, blob);
   }
 `;
 
 const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 100;
+const CANVAS_HEIGHT = 200;
 
 function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | null {
   const shader = gl.createShader(type)!;
@@ -111,7 +114,7 @@ function createProgram(gl: WebGLRenderingContext, shaders: WebGLShader[]): WebGL
   return program;
 }
 
-export function RoundDisplay({ seed = 0 }: { seed?: number }) {
+export function RoundDisplay({ seed = 0, imageSrc }: { seed?: number; imageSrc: string }) {
   const divRef = useRef<HTMLDivElement | null>(null);
   const baseRef = useRef<HTMLCanvasElement | null>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -140,7 +143,7 @@ export function RoundDisplay({ seed = 0 }: { seed?: number }) {
 
     baseRef.current.addEventListener('mousemove', handleMouseMove);
 
-    const gl = baseRef.current.getContext("webgl");
+    const gl = baseRef.current.getContext("webgl", { alpha: true, premultipliedAlpha: false });
     if (!gl) {
       throw new Error("cannot get context");
     }
@@ -154,6 +157,29 @@ export function RoundDisplay({ seed = 0 }: { seed?: number }) {
     }
 
     gl.useProgram(program);
+
+    // Enable blending for alpha
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    // Create texture with placeholder until image loads
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+      new Uint8Array([0, 0, 0, 255]));
+
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.onload = () => {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    };
+    image.src = imageSrc;
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -174,6 +200,7 @@ export function RoundDisplay({ seed = 0 }: { seed?: number }) {
     const resLocation = gl.getUniformLocation(program, "u_resolution");
     const mouseLocation = gl.getUniformLocation(program, "u_mouse");
     const seedLocation = gl.getUniformLocation(program, "u_seed");
+    const textureLocation = gl.getUniformLocation(program, "u_texture");
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -188,6 +215,9 @@ export function RoundDisplay({ seed = 0 }: { seed?: number }) {
       gl.uniform2f(resLocation, CANVAS_WIDTH, CANVAS_HEIGHT);
       gl.uniform2f(mouseLocation, mouseRef.current.x, mouseRef.current.y);
       gl.uniform1f(seedLocation, seed);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.uniform1i(textureLocation, 0);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       animationId = requestAnimationFrame(render);
     }
@@ -197,13 +227,14 @@ export function RoundDisplay({ seed = 0 }: { seed?: number }) {
     return () => {
       cancelAnimationFrame(animationId);
       baseRef.current?.removeEventListener('mousemove', handleMouseMove);
+      gl.deleteTexture(texture);
       // strict mode shenanigans clean up
       if (baseRef.current && div) {
         div.removeChild(baseRef.current);
       }
       baseRef.current = null;
     }
-  }, [])
+  }, [imageSrc, seed])
 
   return (
     <div ref={divRef}>

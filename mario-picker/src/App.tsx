@@ -34,7 +34,7 @@ function App() {
         </select>
         {roundResults?.map((result, index) =>
           <div className='round-card' key={"round " + index}>
-            <RoundDisplay seed={Math.random()} />
+            <RoundDisplay seed={Math.random()} imageSrc='/assets/mario_circuit.jpg' />
             <div className='round-name'>
               Round {index + 1}
             </div>
