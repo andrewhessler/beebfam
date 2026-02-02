@@ -15,7 +15,7 @@ const fsSource = `
   uniform float u_seed;
   uniform sampler2D u_texture;
 
-  #define NUM_BALLS 100
+  #define NUM_BALLS 60 
 
   vec3 hsb2rgb(in vec3 c) {
     vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
@@ -52,6 +52,24 @@ const fsSource = `
                      return 130.0 * dot(m, g);
   }
 
+  float rand(float n){return fract(sin(n) * 43758.5453123);}
+
+  float rand(vec2 n) { 
+    return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+  }
+
+  float noise(float p){
+    float fl = floor(p);
+    float fc = fract(p);
+    return mix(rand(fl), rand(fl + 1.0), fc);
+  }
+
+  float noise(vec2 n) {
+    const vec2 d = vec2(0.0, 1.0);
+    vec2 b = floor(n), f = smoothstep(vec2(0.0), vec2(1.0), fract(n));
+    return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);
+  }
+
   void main() {
     vec2 st = gl_FragCoord.xy / u_resolution;
     float aspect = u_resolution.x / u_resolution.y;
@@ -61,8 +79,8 @@ const fsSource = `
     for (int i = 0; i < NUM_BALLS; i++) {
       float fi = float(i) + u_seed * 100.0;
       vec2 pos = vec2(
-        0.5 + 0.6 * snoise(vec2(u_time * 0.01, fi)),
-        0.5 + 0.6 * snoise(vec2(u_time * 0.01 + 50.0, fi))
+        0.5 + 0.6 * snoise(vec2(u_time * 0.02, fi)),
+        0.5 + 0.6 * snoise(vec2(u_time * 0.02 + 50.0, fi))
       );
       pos.x *= aspect;
       float r = (0.06) + 0.03 * sin(fi * 2.0);
@@ -81,8 +99,8 @@ const fsSource = `
   }
 `;
 
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 200;
+const CANVAS_WIDTH = 200;
+const CANVAS_HEIGHT = 112;
 
 function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | null {
   const shader = gl.createShader(type)!;
