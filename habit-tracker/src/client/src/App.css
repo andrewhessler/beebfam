@@ -124,7 +124,7 @@ select {
 .heatmap-table th {
   padding: 2px;
   text-align: center;
-  min-width: 70px;
+  min-width: 65px;
 }
 
 .heatmap-table td {
