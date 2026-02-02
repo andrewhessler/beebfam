@@ -122,13 +122,13 @@ select {
 }
 
 .heatmap-table th {
-  padding: 8px;
+  padding: 2px;
   text-align: center;
-  min-width: 80px;
+  min-width: 70px;
 }
 
 .heatmap-table td {
-  padding: 8px;
+  padding: 2px;
   text-align: center;
 }
 
