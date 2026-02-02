@@ -55,7 +55,6 @@ function App() {
 
   return (
     <>
-      <a id="hub-link" href="https://beebfam.org">Back to Hub</a>
       <div className='rounds'>
         {roundResults?.map((result, index) =>
           <div className='round-card' key={"round " + index}>

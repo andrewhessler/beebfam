@@ -14,8 +14,8 @@
 .rounds {
   display: flex;
   flex-direction: column;
-  row-gap: 20px;
-  padding-bottom: 30px;
+  row-gap: 10px;
+  padding-bottom: 20px;
 }
 
 select {
