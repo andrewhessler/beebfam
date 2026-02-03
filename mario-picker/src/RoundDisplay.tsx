@@ -15,7 +15,7 @@ const fsSource = `
   uniform float u_seed;
   uniform sampler2D u_texture;
 
-  #define NUM_BALLS 60 
+  #define NUM_BALLS 50 
 
   vec3 hsb2rgb(in vec3 c) {
     vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
@@ -83,12 +83,12 @@ const fsSource = `
         0.5 + 0.6 * snoise(vec2(u_time * 0.02 + 50.0, fi))
       );
       pos.x *= aspect;
-      float r = (0.06) + 0.03 * sin(fi * 2.0);
+      float r = 0.085;
       vec2 aspect_dist = st - pos;
       field += (r * r) / dot(aspect_dist, aspect_dist);
     }
     
-    float blob = smoothstep(0.97, 1.03, field);
+    float blob = smoothstep(1.50, 1.70, field);
     
     // Sample texture (use non-aspect-corrected coords)
     vec2 texCoord = gl_FragCoord.xy / u_resolution;
